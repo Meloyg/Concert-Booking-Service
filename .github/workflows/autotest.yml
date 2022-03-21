@@ -1,0 +1,13 @@
+name: GitHub Workflow for auto-running tests for Project
+
+on:
+  push:
+     branches:
+       - submission
+jobs:
+  build:
+     name: Run make with target tests
+     runs-on: ubuntu-latest
+     steps:    
+       - uses: actions/checkout@v2
+       - run: mvn -B verify

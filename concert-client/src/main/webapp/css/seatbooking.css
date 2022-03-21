@@ -1,0 +1,139 @@
+* {
+    font-family: Arial;
+}
+
+.seat-ui-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    /*display: grid;*/
+    /*grid-template-rows: auto;*/
+    /*grid-template-columns: 1fr 100px;*/
+    /*grid-template-areas:*/
+            /*"title title"*/
+            /*"seats seats"*/
+            /*"totals button";*/
+}
+
+/*.seat-button {*/
+    /*grid-area: button;*/
+/*}*/
+
+/*.seat-totals {*/
+    /*grid-area: totals;*/
+/*}*/
+
+/*.seat-title {*/
+    /*grid-area: title;*/
+/*}*/
+
+.seat-title {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.seat-subtitle {
+    color: darkslategray;
+    font-style: italic;
+}
+
+.seat-map {
+    /*grid-area: seats;*/
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.band {
+    border: 1px dotted lightslategray;
+    margin-bottom: 10px;
+    padding: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.band:first-child {
+    margin-top: 10px;
+}
+
+.band-label {
+    font-style: italic;
+    color: darkslategray;
+    text-align: end;
+    margin-right: 10px;
+}
+
+.band-seats {
+    display: grid;
+    grid-template-columns:  40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px 40px;
+    /*grid-template-columns:  50px 50px 50px 50px 50px 50px 50px 50px 50px 50px 50px 50px 50px;*/
+    grid-auto-rows: 40px;
+    grid-gap: 6px;
+}
+
+.row-label {
+    /*border: 1px solid red;*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.row-label > p {
+    font-size: 150%;
+    font-weight: bold;
+}
+
+.seat {
+    /*background-color: aliceblue;*/
+    /*border: 1px solid darkslategray;*/
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /*transition: filter 0.1s ease;*/
+}
+
+.seat.booked {
+    /*background-color: lightcoral;*/
+    background-image: url("../images/user-shape.png");
+    filter: drop-shadow(0px 0px 5px red);
+}
+
+.seat:not(.booked) {
+    background-image: url("../images/seat-icon.png");
+    cursor: pointer;
+}
+
+.seat:not(.booked):hover, .seat.held {
+    /*background-color: dodgerblue;*/
+    filter: drop-shadow(0px 0px 5px mediumblue);
+}
+
+.seat > p {
+    font-size: 70%;
+    font-style: italic;
+    color: darkgray;
+    cursor: pointer;
+}
+
+.seat.booked > p {
+    display: none;
+}
+
+.silver {
+    background-color: #C0C0C05F;
+}
+
+.gold {
+    background-color: #FFD7005F;
+}
+
+.platinum {
+    background-color: #F8F8FFAF;
+}

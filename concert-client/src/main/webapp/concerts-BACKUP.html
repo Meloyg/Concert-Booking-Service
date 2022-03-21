@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Concerts</title>
+    <link rel="stylesheet" href="./css/site.css">
+
+    <script src="./js/modal.js"></script>
+    <link rel="stylesheet" href="./css/modal.css">
+
+    <script type="module" src="./js/concerts.js"></script>
+</head>
+<body>
+
+<div class="container master-detail-container">
+
+    <div class="master left-sidebar flex-col align-center">
+        <h1>Concerts</h1>
+        <div id="concerts-list" class="image-list flex-col">
+
+            <!--<img src="http://placekitten.com/375/125">-->
+            <!--<img src="http://placekitten.com/375/125">-->
+            <!--<img src="http://placekitten.com/375/125">-->
+            <!--<img src="http://placekitten.com/375/125">-->
+            <!--<img src="http://placekitten.com/375/125">-->
+            <!--<img src="http://placekitten.com/375/125">-->
+            <!--<img src="http://placekitten.com/375/125">-->
+            <!--<img src="http://placekitten.com/375/125">-->
+            <!--<img src="http://placekitten.com/375/125">-->
+            <!--<img src="http://placekitten.com/375/125">-->
+
+        </div>
+    </div>
+
+    <div class="detail">
+
+        <div class="sticky flex-col align-center">
+            <h1>The concert title</h1>
+            <img class="shadow" src="http://placekitten.com/750/250" style="width: 750px; height: 250px;">
+
+            <h3>Description</h3>
+            <p class="description">Pretend not to be evil. Lick yarn hanging out of own butt swat turds around the
+                house. Jump off balcony, onto
+                stranger's head. Grass smells good roll over and sun my belly or stares at human while pushing stuff off
+                a
+                table, shake treat bag.</p>
+            <p class="description">Use lap as chair love and coo around boyfriend who purrs and makes the perfect
+                moonlight eyes so i can purr
+                and swat the glittery gleaming yarn to him (the yarn is from a $125 sweater) sit in window and stare
+                oooh, a
+                bird, yum yet stare at guinea pigs my water bowl is clean and freshly replenished, so i'll drink from
+                the
+                toilet, so meow. Purrrrrr.</p>
+
+            <div class="align-self-stretch flex-row justify-sb align-stretch">
+                <div class="flex-col align-center">
+                    <h3>Performers</h3>
+                    <div class="performers flex-row align-center">
+
+                        <div>
+                            <img id="modal1button" class="d-block" src="http://placekitten.com/100/100">
+                            <p class="text-center">Name!</p>
+                        </div>
+
+                        <div>
+                            <img id="modal2button" class="d-block" src="http://placekitten.com/100/100">
+                            <p class="text-center">Name!</p>
+                        </div>
+
+                        <div>
+                            <img class="d-block" src="http://placekitten.com/100/100">
+                            <p class="text-center">Name!</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="flex-col align-center">
+                    <h3>Dates</h3>
+                    <table class="dates-table">
+                        <tr><th>Octobuary 32nd</th><td><button>Book!</button></td></tr>
+                        <tr><th>Febtember 86th</th><td><button>Book!</button></td></tr>
+                        <tr><th>Junely 0th</th><td><button>Book!</button></td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div id="modals-here">
+    <div class="modal" data-openButtonId="#modal1button">
+
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="flex-col align-center">
+                <h1>Some peformer name</h1>
+                <img class="d-block shadow" src="http://placekitten.com/256/256">
+                <p class="description">Hey! you there, with the hands you are a captive audience while sitting on the toilet, pet me. Meow go back to sleep owner brings food and water tries to pet on head, so scratch get sprayed by water because bad cat the dog smells bad.</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

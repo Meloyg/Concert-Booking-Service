@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Seat Booking</title>
+    <link rel="stylesheet" href="./css/seatbooking.css">
+    <link rel="stylesheet" href="./css/site.css">
+    <script type="module" src="./js/seatbooking.js"></script>
+
+    <script type="module">
+        import {SeatUI} from "./js/seat-ui-module.js";
+        import {initSeatBookingPage} from "./js/seatbooking.js";
+
+        window.addEventListener("load", () => {
+
+            const seats = initSeatBookingPage();
+
+        });
+    </script>
+    <style>
+        .container {
+            width: 95%;
+        }
+    </style>
+</head>
+<body>
+<div class="container flex-row justify-sb">
+
+    <div class="seat-ui-container">
+
+        <h1 class="seat-title">Select your seats</h1>
+        <h2 class="seat-subtitle">(click as many as you like):</h2>
+
+        <div class="seat-map"></div>
+
+        <h3 class="seat-totals">Selected: <span id="selected-seat-labels">None</span> ($<span id="selected-seat-price">0.00</span>)</h3>
+
+        <div id="seats-loading" class="loading">
+            <img src="./images/loading.gif">
+            <p>Loading...</p>
+        </div>
+
+        <button class="seat-button align-self-end" id="button-book">Book!</button>
+
+    </div>
+
+    <div class="right-sidebar flex-col align-center justify-center">
+        <img class="shadow" src="./images/concerts/ptx.jpg" width="500px">
+        <h1>My concert title</h1>
+        <p class="description">Spend six hours per day washing, but still have a crusty butthole the cat was chasing the
+            mouse and litter kitter kitty litty little kitten big roar roar feed me meow all night for i hate cucumber
+            pls dont throw it at me pushes butt to face.</p>
+    </div>
+
+</div>
+</body>
+</html>
