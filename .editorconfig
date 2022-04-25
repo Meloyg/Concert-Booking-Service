@@ -1,0 +1,16 @@
+# http://editorconfig.org
+# EditorConfig for VS Code plugin needs to be installed when using editor
+# This file will automatically constraint the format after saved
+
+# top-most EditorConfig file
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf
+insert_final_newline = true
+
+
+[*.java]
+ij_java_align_multiline_chained_methods = true
+ij_java_method_call_chain_wrap = split_into_lines
