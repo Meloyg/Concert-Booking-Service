@@ -20,7 +20,7 @@ public class ConcertDTO {
     private Long id;
     private String title;
     private String imageName;
-    private String blrb;
+    private String blurb;
     private List<LocalDateTime> dates = new ArrayList<>();
     private List<PerformerDTO> performers = new ArrayList<>();
 
@@ -31,7 +31,7 @@ public class ConcertDTO {
         this.id = id;
         this.title = title;
         this.imageName = imageName;
-        this.blrb = blurb;
+        this.blurb = blurb;
     }
 
     public ConcertDTO(String title, String imageName) {
@@ -64,11 +64,11 @@ public class ConcertDTO {
     }
 
     public String getBlurb() {
-        return blrb;
+        return blurb;
     }
 
-    public void setBlurb(String blrb) {
-        this.blrb = blrb;
+    public void setBlurb(String blurb) {
+        this.blurb = blurb;
     }
 
     public List<LocalDateTime> getDates() {
