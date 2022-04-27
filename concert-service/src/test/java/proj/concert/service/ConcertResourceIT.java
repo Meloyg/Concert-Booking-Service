@@ -2,12 +2,9 @@ package proj.concert.service;
 
 import org.junit.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import proj.concert.common.dto.*;
 import proj.concert.common.jackson.LocalDateTimeDeserializer;
 import proj.concert.common.types.Genre;
-import proj.concert.service.util.ConcertUtils;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -32,7 +29,6 @@ public class ConcertResourceIT {
 
     private static final String WEB_SERVICE_URI = "http://localhost:10000/services/concert-service";
     private Client client;
-    private static Logger LOGGER = LoggerFactory.getLogger(ConcertResourceIT.class);
 
     /**
      * Ensures the DB is in the same state before running each test.
@@ -286,14 +282,14 @@ public class ConcertResourceIT {
 
         // Try to book
         Response response = client.target(WEB_SERVICE_URI + "/bookings")
-                .request().post(Entity.json(bReq));
+                                  .request().post(Entity.json(bReq));
 
         // Make sure it didn't work
         assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), response.getStatus());
 
         // Make sure no seats were booked
         List<SeatDTO> bookedSeats = client.target(WEB_SERVICE_URI + "/seats/2020-02-15T20:00:00?status=Booked")
-                .request().get(new GenericType<List<SeatDTO>>() {
+                                          .request().get(new GenericType<List<SeatDTO>>() {
                 });
 
         assertEquals(0, bookedSeats.size());
@@ -321,7 +317,7 @@ public class ConcertResourceIT {
 
         // Make sure two seats were booked
         List<SeatDTO> bookedSeats = client.target(WEB_SERVICE_URI + "/seats/2020-02-15T20:00:00?status=Booked")
-                .request().get(new GenericType<List<SeatDTO>>() {
+                                          .request().get(new GenericType<List<SeatDTO>>() {
                 });
 
         assertEquals(2, bookedSeats.size());
@@ -373,7 +369,7 @@ public class ConcertResourceIT {
 
         // Get the booking
         Response response = client.target(bookingResponse.getLocation())
-                .request().get();
+                                  .request().get();
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         // Log in as someone else
@@ -381,7 +377,7 @@ public class ConcertResourceIT {
 
         // Attempt to get the booking - should fail
         response = client.target(bookingResponse.getLocation())
-                .request().get();
+                         .request().get();
 
         assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
 
@@ -421,7 +417,7 @@ public class ConcertResourceIT {
 
             // Get user 1's bookings
             List<BookingDTO> user1Bookings = client.target(WEB_SERVICE_URI + "/bookings")
-                    .request().get(new GenericType<List<BookingDTO>>() {
+                                                   .request().get(new GenericType<List<BookingDTO>>() {
                     });
 
             // Make sure they're actually user 1's bookings.
@@ -433,7 +429,7 @@ public class ConcertResourceIT {
 
             // Get user 2's bookings
             List<BookingDTO> user2Bookings = user2Client.target(WEB_SERVICE_URI + "/bookings")
-                    .request().get(new GenericType<List<BookingDTO>>() {
+                                                        .request().get(new GenericType<List<BookingDTO>>() {
                     });
 
             // Make sure they're actually user 2's bookings.
@@ -514,14 +510,14 @@ public class ConcertResourceIT {
 
             // Get user 1's bookings
             List<BookingDTO> user1Bookings = client.target(WEB_SERVICE_URI + "/bookings")
-                    .request().get(new GenericType<List<BookingDTO>>() {
+                                                   .request().get(new GenericType<List<BookingDTO>>() {
                     });
             assertEquals(1, user1Bookings.size());
 
 
             // Get user 2's bookings
             List<BookingDTO> user2Bookings = user2Client.target(WEB_SERVICE_URI + "/bookings")
-                    .request().get(new GenericType<List<BookingDTO>>() {
+                                                        .request().get(new GenericType<List<BookingDTO>>() {
                     });
             assertEquals(0, user2Bookings.size());
         } finally {
@@ -561,14 +557,14 @@ public class ConcertResourceIT {
 
             // Get user 1's bookings
             List<BookingDTO> user1Bookings = client.target(WEB_SERVICE_URI + "/bookings")
-                    .request().get(new GenericType<List<BookingDTO>>() {
+                                                   .request().get(new GenericType<List<BookingDTO>>() {
                     });
             assertEquals(1, user1Bookings.size());
 
 
             // Get user 2's bookings
             List<BookingDTO> user2Bookings = user2Client.target(WEB_SERVICE_URI + "/bookings")
-                    .request().get(new GenericType<List<BookingDTO>>() {
+                                                        .request().get(new GenericType<List<BookingDTO>>() {
                     });
             assertEquals(0, user2Bookings.size());
         } finally {
@@ -577,7 +573,7 @@ public class ConcertResourceIT {
 
         // Make sure only seats C5 and C6 are booked. C7 shouldn't be booked.
         List<SeatDTO> bookedSeats = client.target(WEB_SERVICE_URI + "/seats/2020-02-15T20:00:00?status=Booked")
-                .request().get(new GenericType<List<SeatDTO>>() {
+                                          .request().get(new GenericType<List<SeatDTO>>() {
                 });
 
         assertEquals(2, bookedSeats.size());
@@ -602,7 +598,7 @@ public class ConcertResourceIT {
 
         // Get booked seats - should be C5 and C6
         List<SeatDTO> bookedSeats = client.target(WEB_SERVICE_URI + "/seats/2020-02-15T20:00:00?status=Booked")
-                .request().get(new GenericType<List<SeatDTO>>() {
+                                          .request().get(new GenericType<List<SeatDTO>>() {
                 });
 
         assertEquals(2, bookedSeats.size());
@@ -626,7 +622,7 @@ public class ConcertResourceIT {
 
         // Get unbooked seats - should be everything except C5 and C6
         List<SeatDTO> unbookedSeats = client.target(WEB_SERVICE_URI + "/seats/2020-02-15T20:00:00?status=Unbooked")
-                .request().get(new GenericType<List<SeatDTO>>() {
+                                            .request().get(new GenericType<List<SeatDTO>>() {
                 });
 
         assertEquals(118, unbookedSeats.size());
@@ -653,7 +649,7 @@ public class ConcertResourceIT {
 
         // Get hopefully all seats
         List<SeatDTO> seats = client.target(WEB_SERVICE_URI + "/seats/2020-02-15T20:00:00?status=Any")
-                .request().get(new GenericType<List<SeatDTO>>() {
+                                    .request().get(new GenericType<List<SeatDTO>>() {
                 });
 
         assertEquals(120, seats.size());
@@ -815,7 +811,7 @@ public class ConcertResourceIT {
     private static Response login(Client client, String username, String password) {
         UserDTO creds = new UserDTO(username, password);
         return client.target(WEB_SERVICE_URI + "/login")
-                .request().post(Entity.json(creds));
+                     .request().post(Entity.json(creds));
     }
 
     /**
