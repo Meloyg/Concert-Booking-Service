@@ -2,9 +2,12 @@ package proj.concert.service;
 
 import org.junit.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import proj.concert.common.dto.*;
 import proj.concert.common.jackson.LocalDateTimeDeserializer;
 import proj.concert.common.types.Genre;
+import proj.concert.service.util.ConcertUtils;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -29,6 +32,7 @@ public class ConcertResourceIT {
 
     private static final String WEB_SERVICE_URI = "http://localhost:10000/services/concert-service";
     private Client client;
+    private static Logger LOGGER = LoggerFactory.getLogger(ConcertResourceIT.class);
 
     /**
      * Ensures the DB is in the same state before running each test.

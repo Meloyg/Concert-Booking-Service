@@ -13,46 +13,52 @@ import javax.ws.rs.core.*;
 import java.util.*;
 
 
-@Path("/concerts")
+@Path("/concert-service")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ConcertResource {
 
+    // TODO Implement this.
     private static final Logger LOGGER = LoggerFactory.getLogger(ConcertResource.class);
 
-
     @GET
-    @Path("/concerts")
-    public Response getConcerts(@Context UriInfo uriInfo) {
-        LOGGER.info("getConcerts");
+    @Path("/concerts/{id}")
+    public Response retrieveConcert(@PathParam("id") long id) {
+        LOGGER.info("Retrieving concert with id: " + id);
 
-        EntityManager em = new PersistenceManager().createEntityManager();
-
-        try {
-            TypedQuery<Concert> query = em.createQuery("SELECT c FROM Concert c", Concert.class);
-            List<Concert> concerts = query.getResultList();
-
-            if (concerts.isEmpty()) {
-                return Response.status(204).build();
-            }
-
-            Set<ConcertDTO> dtoConcerts = new HashSet<>();
-            concerts.forEach(concert -> dtoConcerts.add(ConcertMapper.toDTO(concert));
-            em.getTransaction().commit();
-
-            GenericType<Set<ConcertDTO>> result = new GenericType<Set<ConcertDTO>>(dtoConcerts) {};
-            return Response.ok(result).build();
-
-        } catch (Exception e) {
-            LOGGER.error("Exception in getConcerts", e);
-        } finally {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().commit();
-            }
+        // look up the concert in memory data structure
+        EntityManager em = PersistenceManager.instance().createEntityManager();
+        Concert concert = em.find(Concert.class, id);
+        if (concert == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
         }
-
+        return Response.ok(ConcertMapper.toDTO(concert)).build();
     }
 
+    @GET
+    @Path("/performers/{id}")
+    public Response retrievePerformer(@PathParam("id") long id) {
+        LOGGER.info("Retrieving performer with id: " + id);
+        // look up the concert in memory data structure
+        EntityManager em = PersistenceManager.instance().createEntityManager();
+        Performer concert = em.find(Performer.class, id);
+        if (concert == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(concert).build();
+    }
 
+    @POST
+    @Path("/login/{id}")
+    public Response Login(@PathParam("id") long id) {
+        LOGGER.info("Retrieving performer with id: " + id);
+        // look up the concert in memory data structure
+        EntityManager em = PersistenceManager.instance().createEntityManager();
+        Performer concert = em.find(Performer.class, id);
+        if (concert == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        return Response.ok(concert).build();
+    }
 
 }

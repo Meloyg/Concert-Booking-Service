@@ -1,35 +1,46 @@
 package proj.concert.service.domain;
 
-import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+/**
+ * A booking for a concert
+ */
 @Entity
+@Table(name = "BOOKINGS")
 public class Booking {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private LocalDateTime date;
-    private Long concertId;
-
-    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
-    private List<Seat> seatList;
 
     @ManyToOne
     private User user;
 
-    public Booking(LocalDateTime date, Long concertId, List<Seat> seatList, User user) {
-        this.date = date;
-        this.concertId = concertId;
-        this.seatList = seatList;
-        this.user = user;
-    }
+    private long concertId;
+    private LocalDateTime date;
+
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<Seat> seats = new ArrayList<>();
 
     public Booking() {
-        this(null, null, null, null);
+    }
+
+    public Booking(User user, long concertId, LocalDateTime date) {
+        this.user = user;
+        this.concertId = concertId;
+        this.date = date;
     }
 
     public Long getId() {
@@ -40,30 +51,6 @@ public class Booking {
         this.id = id;
     }
 
-    public LocalDateTime getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDateTime date) {
-        this.date = date;
-    }
-
-    public Long getConcertId() {
-        return concertId;
-    }
-
-    public void setConcertId(Long concertId) {
-        this.concertId = concertId;
-    }
-
-    public List<Seat> getSeatList() {
-        return seatList;
-    }
-
-    public void setSeatList(List<Seat> seatList) {
-        this.seatList = seatList;
-    }
-
     public User getUser() {
         return user;
     }
@@ -72,31 +59,44 @@ public class Booking {
         this.user = user;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Booking booking = (Booking) o;
-        return Objects.equals(id, booking.id) &&
-                Objects.equals(date, booking.date) &&
-                Objects.equals(concertId, booking.concertId) &&
-                Objects.equals(seatList, booking.seatList) &&
-                Objects.equals(user, booking.user);
+    public long getConcertId() {
+        return concertId;
+    }
+
+    public void setConcertId(long concertId) {
+        this.concertId = concertId;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
+    }
+
+    public List<Seat> getSeats() {
+        return seats;
+    }
+
+    public void setSeats(List<Seat> seats) {
+        this.seats = seats;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, date, concertId, seatList, user);
+        return Objects.hash(concertId, date, id, user);
     }
 
     @Override
-    public String toString() {
-        return "Booking{" +
-                "id=" + id +
-                ", date=" + date +
-                ", concertId=" + concertId +
-                ", seatList=" + seatList +
-                ", user=" + user +
-                '}';
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Booking)) {
+            return false;
+        }
+        Booking other = (Booking) obj;
+        return concertId == other.concertId && Objects.equals(date, other.date) && Objects.equals(id, other.id) && Objects.equals(user, other.user);
     }
 }

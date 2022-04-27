@@ -4,6 +4,8 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Response;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import proj.concert.service.util.ConcertUtils;
 
 /**
@@ -12,6 +14,7 @@ import proj.concert.service.util.ConcertUtils;
 @Path("/concert-service-test")
 public class TestResource {
 
+    private static Logger LOGGER = LoggerFactory.getLogger(TestResource.class);
     /**
      * Resets the database to default values for testing purposes.
      */
@@ -21,6 +24,7 @@ public class TestResource {
 
         PersistenceManager.instance().reset();
         ConcertUtils.initConcerts();
+        LOGGER.info("reset done");
 
         return Response.noContent().build();
     }
