@@ -81,17 +81,46 @@ public class ConcertResource {
     @GET
     @Path("/performers/{id}")
     public Response retrievePerformerById(@PathParam("id") long id) {
-        LOGGER.info("Retrieving performer with id: " + id);
-        // look up the concert in memory data structure
-        EntityManager em = PersistenceManager.instance()
-                                             .createEntityManager();
-        Performer concert = em.find(Performer.class, id);
-        if (concert==null) {
-            return Response.status(Response.Status.NOT_FOUND)
-                           .build();
+        LOGGER.info("Getting a performer of id " + id);
+        EntityManager em = PersistenceManager.instance().createEntityManager();
+
+        try {
+            em.getTransaction().begin();
+
+            Performer performer = em.find(Performer.class, id);
+
+            em.getTransaction().commit();
+
+            if (performer == null) {
+                LOGGER.debug("No performer with id: " + id + " exists");
+                return Response.status(Response.Status.NOT_FOUND).build();
+            } else {
+                return Response.ok(PerformerMapper.toDTO(performer)).build();
+            }
+
+        } finally {
+            em.close();
         }
-        return Response.ok(concert)
-                       .build();
+    }
+
+    @GET
+    @Path("/performers")
+    public Response getAllPerformers(){
+        LOGGER.info("Retrieving All performers.");
+        EntityManager em = PersistenceManager.instance().createEntityManager();
+        try{
+            em.getTransaction().begin();
+
+            List<Performer> performers = em.createQuery("select p from Performer p",Performer.class).getResultList();
+
+            em.getTransaction().commit();
+
+            List<PerformerDTO> performerDTOList = PerformerMapper.listToDTO(performers);
+            GenericEntity<List<PerformerDTO>> entity = new GenericEntity<>(performerDTOList) {};
+            return Response.ok(entity).build();
+        }finally {
+            em.close();
+        }
     }
 
     @POST
