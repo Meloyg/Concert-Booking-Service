@@ -27,12 +27,15 @@ public class ConcertResource {
         LOGGER.info("Retrieving concert with id: " + id);
 
         // look up the concert in memory data structure
-        EntityManager em = PersistenceManager.instance().createEntityManager();
+        EntityManager em = PersistenceManager.instance()
+                                             .createEntityManager();
         Concert concert = em.find(Concert.class, id);
-        if (concert == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+        if (concert==null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                           .build();
         }
-        return Response.ok(ConcertMapper.toDTO(concert)).build();
+        return Response.ok(ConcertMapper.toDTO(concert))
+                       .build();
     }
 
     @GET
@@ -80,25 +83,61 @@ public class ConcertResource {
     public Response retrievePerformerById(@PathParam("id") long id) {
         LOGGER.info("Retrieving performer with id: " + id);
         // look up the concert in memory data structure
-        EntityManager em = PersistenceManager.instance().createEntityManager();
+        EntityManager em = PersistenceManager.instance()
+                                             .createEntityManager();
         Performer concert = em.find(Performer.class, id);
-        if (concert == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+        if (concert==null) {
+            return Response.status(Response.Status.NOT_FOUND)
+                           .build();
         }
-        return Response.ok(concert).build();
+        return Response.ok(concert)
+                       .build();
     }
 
     @POST
     @Path("/login/{id}")
-    public Response Login(@PathParam("id") long id) {
-        LOGGER.info("Retrieving performer with id: " + id);
-        // look up the concert in memory data structure
-        EntityManager em = PersistenceManager.instance().createEntityManager();
-        Performer concert = em.find(Performer.class, id);
-        if (concert == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+    public Response Login(UserDTO userDTO) {
+        LOGGER.info("Login with username: " + userDTO.getUsername());
+
+        EntityManager em = PersistenceManager.instance()
+                                             .createEntityManager();
+
+        try {
+            em.getTransaction()
+              .begin();
+            User user = em.find(User.class, userDTO.getUsername());
+            if (user==null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                               .build();  // user not found
+            } else {
+                if (user.getPassword()
+                        .equals(userDTO.getPassword())) {
+                    String token = UUID.randomUUID()
+                                       .toString();
+                    user.setCookie(token);
+                    em.getTransaction()
+                      .commit();
+                    return Response.ok(user)
+                                   .cookie(makeCookie(token))
+                                   .build();
+                } else {
+                    return Response.status(Response.Status.NOT_FOUND)
+                                   .build();  // password incorrect
+                }
+            }
+        } finally {
+            em.close();
         }
-        return Response.ok(concert).build();
+    }
+
+
+    //    Helper method to create a cookie
+    private NewCookie makeCookie(String authToken) {
+
+        NewCookie newCookie = new NewCookie("authToken", authToken);
+        LOGGER.info("Generated cookie: " + newCookie.getValue());
+
+        return newCookie;
     }
 
 }
