@@ -23,7 +23,7 @@ public class ConcertResource {
 
     @GET
     @Path("/concerts/{id}")
-    public Response retrieveConcert(@PathParam("id") long id) {
+    public Response retrieveConcertById(@PathParam("id") long id) {
         LOGGER.info("Retrieving concert with id: " + id);
 
         // look up the concert in memory data structure
@@ -36,8 +36,48 @@ public class ConcertResource {
     }
 
     @GET
+    @Path("/concerts")
+    public Response getAllConcerts() {
+        LOGGER.info("Retrieving all concerts.");
+        EntityManager em = PersistenceManager.instance().createEntityManager();
+
+        try{
+            em.getTransaction().begin();
+
+            List<Concert> concertList = em.createQuery("select c from Concert c", Concert.class) .getResultList();
+            em.getTransaction().commit();
+
+            List<ConcertDTO> concertDTOList = ConcertMapper.listToDTO(concertList);
+            GenericEntity<List<ConcertDTO>> entity = new GenericEntity<>(concertDTOList) {};
+            return Response.ok(entity).build();
+        } finally {
+            em.close();
+        }
+    }
+
+    @GET
+    @Path("/concerts/summaries")
+    public Response getConcertSummaries(){
+        LOGGER.info("Retrieving concerts summaries.");
+        EntityManager em = PersistenceManager.instance().createEntityManager();
+
+        try{
+            em.getTransaction().begin();
+
+            List<Concert> concerts = em.createQuery("select c from Concert c", Concert.class).getResultList();
+            em.getTransaction().commit();
+
+            List<ConcertSummaryDTO> concertSummaryDTOList = ConcertMapper.listToConcertSummaryDTO(concerts);
+            GenericEntity<List<ConcertSummaryDTO>> entity = new GenericEntity<>(concertSummaryDTOList) {};
+            return Response.ok(entity).build();
+        }finally {
+            em.close();
+        }
+    }
+
+    @GET
     @Path("/performers/{id}")
-    public Response retrievePerformer(@PathParam("id") long id) {
+    public Response retrievePerformerById(@PathParam("id") long id) {
         LOGGER.info("Retrieving performer with id: " + id);
         // look up the concert in memory data structure
         EntityManager em = PersistenceManager.instance().createEntityManager();

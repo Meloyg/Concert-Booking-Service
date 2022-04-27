@@ -17,9 +17,9 @@ public class ConcertSummaryDTO {
     }
 
     public ConcertSummaryDTO(Long id, String title, String imageName) {
+        this.id = id;
         this.title = title;
         this.imageName = imageName;
-        this.id = id;
     }
 
     public Long getId() {
