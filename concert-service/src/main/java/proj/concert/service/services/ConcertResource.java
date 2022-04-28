@@ -186,10 +186,14 @@ public class ConcertResource {
         try {
             em.getTransaction()
               .begin();
+
             User user = em.createQuery("select user from User user where user.username = :username", User.class)
                           .setParameter("username", userDTO.getUsername())
-                          .getSingleResult();
-//            User user = em.find(User.class, userDTO.getUsername());
+                          .getResultList()
+                          .stream()
+                          .findFirst()
+                          .orElse(null);
+
             if (user==null) {
                 return Response.status(Response.Status.UNAUTHORIZED)
                                .build();  // user not found
@@ -199,6 +203,7 @@ public class ConcertResource {
                     String token = UUID.randomUUID()
                                        .toString();
                     user.setCookie(token);
+                    em.merge(user);
                     em.getTransaction()
                       .commit();
                     return Response.ok(user)
@@ -218,10 +223,10 @@ public class ConcertResource {
     //    =================  Booking Endpoint ====================
     //    ========================================================
 
-    @POST
+    @GET
     @Path("/bookings")
-    public Response createBooking(BookingRequestDTO bookingDTO, @CookieParam("token") Cookie cookie) {
-        LOGGER.info("Creating booking with concert: " + bookingDTO.getConcertId());
+    public Response getAllBooking(BookingRequestDTO bookingDTO, @CookieParam("token") Cookie cookie) {
+        LOGGER.info("Get all bookings.");
 
         EntityManager em = PersistenceManager.instance()
                                              .createEntityManager();
@@ -241,7 +246,7 @@ public class ConcertResource {
                                        .getResultList();
 
             List<BookingDTO> bookingsDTO = BookingMapper.listToDTO(bookings);
-            GenericEntity<List<BookingDTO>> bookingsEntity = new GenericEntity<List<BookingDTO>>(bookingsDTO) {
+            GenericEntity<List<BookingDTO>> bookingsEntity = new GenericEntity<>(bookingsDTO) {
             };
 
             em.getTransaction()
@@ -256,10 +261,57 @@ public class ConcertResource {
 
     }
 
+    @GET
+    @Path("/bookings/{id}")
+    public Response getBookingById(@PathParam("id") int id, @CookieParam("token") Cookie cookie) {
+        LOGGER.info("Get booking by id.");
+
+        EntityManager em = PersistenceManager.instance()
+                                             .createEntityManager();
+
+        try {
+            em.getTransaction()
+              .begin();
+
+            User user = em.find(User.class, cookie.getValue());
+
+            if (user==null) {
+                return Response.status(Response.Status.UNAUTHORIZED)
+                               .build();
+            }
+
+            Booking booking = em.find(Booking.class, id);
+
+            if (booking==null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                               .build();
+            }
+
+            if (booking.getUser()!=user) {
+                return Response.status(Response.Status.FORBIDDEN)
+                               .build();
+            }
+
+            em.getTransaction()
+              .commit();
+
+            BookingDTO bookingDTO = BookingMapper.toDTO(booking);
+
+            return Response.ok(bookingDTO)
+                           .cookie(makeCookie(cookie.getValue()))
+                           .build();
+
+        } finally {
+            em.close();
+        }
+
+    }
+
 
     //    ========================================================
     //    ===================  Helper Function ===================
     //    ========================================================
+
     private NewCookie makeCookie(String authToken) {
 
         NewCookie newCookie = new NewCookie("auth", authToken);
