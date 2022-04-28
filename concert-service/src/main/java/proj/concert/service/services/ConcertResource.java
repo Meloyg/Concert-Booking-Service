@@ -124,7 +124,7 @@ public class ConcertResource {
     }
 
     @POST
-    @Path("/login/{id}")
+    @Path("/login")
     public Response Login(UserDTO userDTO) {
         LOGGER.info("Login with username: " + userDTO.getUsername());
 
@@ -134,9 +134,12 @@ public class ConcertResource {
         try {
             em.getTransaction()
               .begin();
-            User user = em.find(User.class, userDTO.getUsername());
+            User user  = em.createQuery("select user from User user where user.username = :username", User.class)
+                                  .setParameter("username", userDTO.getUsername())
+                                  .getSingleResult();
+            // User user = em.find(User.class, userDTO.getUsername());
             if (user==null) {
-                return Response.status(Response.Status.NOT_FOUND)
+                return Response.status(Response.Status.UNAUTHORIZED)
                                .build();  // user not found
             } else {
                 if (user.getPassword()
@@ -150,7 +153,7 @@ public class ConcertResource {
                                    .cookie(makeCookie(token))
                                    .build();
                 } else {
-                    return Response.status(Response.Status.NOT_FOUND)
+                    return Response.status(Response.Status.UNAUTHORIZED)
                                    .build();  // password incorrect
                 }
             }
@@ -163,7 +166,7 @@ public class ConcertResource {
     //    Helper method to create a cookie
     private NewCookie makeCookie(String authToken) {
 
-        NewCookie newCookie = new NewCookie("authToken", authToken);
+        NewCookie newCookie = new NewCookie("auth", authToken);
         LOGGER.info("Generated cookie: " + newCookie.getValue());
 
         return newCookie;
