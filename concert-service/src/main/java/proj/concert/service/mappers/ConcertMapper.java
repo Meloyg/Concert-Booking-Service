@@ -1,11 +1,9 @@
 package proj.concert.service.mappers;
 
-import proj.concert.common.dto.ConcertDTO;
-import proj.concert.common.dto.ConcertSummaryDTO;
-import proj.concert.service.domain.Concert;
+import proj.concert.common.dto.*;
+import proj.concert.service.domain.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ConcertMapper {
     private ConcertMapper() {
@@ -13,8 +11,11 @@ public class ConcertMapper {
 
     public static ConcertDTO toDTO(Concert c) {
         ConcertDTO dto = new ConcertDTO(c.getId(), c.getTitle(), c.getImageName(), c.getBlurb());
-        c.getPerformers().forEach(performer -> dto.getPerformers().add(PerformerMapper.toDTO(performer)));
-        dto.getDates().addAll(c.getDates());
+        c.getPerformers()
+         .forEach(performer -> dto.getPerformers()
+                                  .add(PerformerMapper.toDTO(performer)));
+        dto.getDates()
+           .addAll(c.getDates());
         return dto;
     }
 
@@ -26,10 +27,10 @@ public class ConcertMapper {
         return dtoList;
     }
 
-    public static List<ConcertSummaryDTO> listToConcertSummaryDTO (List<Concert> concerts){
+    public static List<ConcertSummaryDTO> listToConcertSummaryDTO(List<Concert> concerts) {
         List<ConcertSummaryDTO> concertSummaryDTOList = new ArrayList<>();
         for (Concert c : concerts) {
-            concertSummaryDTOList.add( new ConcertSummaryDTO(c.getId(), c.getTitle(), c.getImageName()));
+            concertSummaryDTOList.add(new ConcertSummaryDTO(c.getId(), c.getTitle(), c.getImageName()));
         }
         return concertSummaryDTOList;
     }
