@@ -4,8 +4,7 @@ import proj.concert.common.dto.*;
 import proj.concert.service.domain.*;
 import proj.concert.service.mappers.*;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.slf4j.*;
 
 import javax.persistence.*;
 import javax.ws.rs.*;
@@ -21,38 +20,67 @@ public class ConcertResource {
     // TODO Implement this.
     private static final Logger LOGGER = LoggerFactory.getLogger(ConcertResource.class);
 
+
+    // ========================================================
+    // ================  Concerts Endpoint ====================
+    // ========================================================
+
+    /**
+     * Retrieves a Concert based on its unique id.
+     * The HTTP response code is either 200 or 404, depending on the existence of
+     * the required concert.
+     *
+     * @param id the unique id of the Concert to be returned.
+     * @return a concert.
+     */
     @GET
     @Path("/concerts/{id}")
     public Response retrieveConcertById(@PathParam("id") long id) {
         LOGGER.info("Retrieving concert with id: " + id);
-
-        // look up the concert in memory data structure
         EntityManager em = PersistenceManager.instance()
                                              .createEntityManager();
-        Concert concert = em.find(Concert.class, id);
-        if (concert==null) {
-            return Response.status(Response.Status.NOT_FOUND)
+        try {
+            em.getTransaction()
+              .begin();
+
+            Concert concert = em.find(Concert.class, id);
+
+            em.getTransaction()
+              .commit();
+
+            if (concert==null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                               .build();
+            }
+            return Response.ok(ConcertMapper.toDTO(concert))
                            .build();
+        } finally {
+            em.close();
         }
-        return Response.ok(ConcertMapper.toDTO(concert))
-                       .build();
     }
 
     @GET
     @Path("/concerts")
     public Response getAllConcerts() {
         LOGGER.info("Retrieving all concerts.");
-        EntityManager em = PersistenceManager.instance().createEntityManager();
+        EntityManager em = PersistenceManager.instance()
+                                             .createEntityManager();
 
-        try{
-            em.getTransaction().begin();
+        try {
+            em.getTransaction()
+              .begin();
 
-            List<Concert> concertList = em.createQuery("select c from Concert c", Concert.class) .getResultList();
-            em.getTransaction().commit();
+            List<Concert> concertList = em.createQuery("select c from Concert c", Concert.class)
+                                          .getResultList();
+
+            em.getTransaction()
+              .commit();
 
             List<ConcertDTO> concertDTOList = ConcertMapper.listToDTO(concertList);
-            GenericEntity<List<ConcertDTO>> entity = new GenericEntity<>(concertDTOList) {};
-            return Response.ok(entity).build();
+            GenericEntity<List<ConcertDTO>> entity = new GenericEntity<>(concertDTOList) {
+            };
+            return Response.ok(entity)
+                           .build();
         } finally {
             em.close();
         }
@@ -60,44 +88,58 @@ public class ConcertResource {
 
     @GET
     @Path("/concerts/summaries")
-    public Response getConcertSummaries(){
+    public Response getConcertSummaries() {
         LOGGER.info("Retrieving concerts summaries.");
-        EntityManager em = PersistenceManager.instance().createEntityManager();
+        EntityManager em = PersistenceManager.instance()
+                                             .createEntityManager();
 
-        try{
-            em.getTransaction().begin();
+        try {
+            em.getTransaction()
+              .begin();
 
-            List<Concert> concerts = em.createQuery("select c from Concert c", Concert.class).getResultList();
-            em.getTransaction().commit();
+            List<Concert> concerts = em.createQuery("select c from Concert c", Concert.class)
+                                       .getResultList();
+
+            em.getTransaction()
+              .commit();
 
             List<ConcertSummaryDTO> concertSummaryDTOList = ConcertMapper.listToConcertSummaryDTO(concerts);
-            GenericEntity<List<ConcertSummaryDTO>> entity = new GenericEntity<>(concertSummaryDTOList) {};
-            return Response.ok(entity).build();
-        }finally {
+            GenericEntity<List<ConcertSummaryDTO>> entity = new GenericEntity<>(concertSummaryDTOList) {
+            };
+            return Response.ok(entity)
+                           .build();
+        } finally {
             em.close();
         }
     }
+
+    //    ========================================================
+    //    ================  Performer Endpoint ===================
+    //    ========================================================
 
     @GET
     @Path("/performers/{id}")
     public Response retrievePerformerById(@PathParam("id") long id) {
         LOGGER.info("Getting a performer of id " + id);
-        EntityManager em = PersistenceManager.instance().createEntityManager();
+        EntityManager em = PersistenceManager.instance()
+                                             .createEntityManager();
 
         try {
-            em.getTransaction().begin();
+            em.getTransaction()
+              .begin();
 
             Performer performer = em.find(Performer.class, id);
 
-            em.getTransaction().commit();
+            em.getTransaction()
+              .commit();
 
-            if (performer == null) {
-                LOGGER.debug("No performer with id: " + id + " exists");
-                return Response.status(Response.Status.NOT_FOUND).build();
+            if (performer==null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                               .build();
             } else {
-                return Response.ok(PerformerMapper.toDTO(performer)).build();
+                return Response.ok(PerformerMapper.toDTO(performer))
+                               .build();
             }
-
         } finally {
             em.close();
         }
@@ -105,26 +147,36 @@ public class ConcertResource {
 
     @GET
     @Path("/performers")
-    public Response getAllPerformers(){
+    public Response getAllPerformers() {
         LOGGER.info("Retrieving All performers.");
-        EntityManager em = PersistenceManager.instance().createEntityManager();
-        try{
-            em.getTransaction().begin();
+        EntityManager em = PersistenceManager.instance()
+                                             .createEntityManager();
+        try {
+            em.getTransaction()
+              .begin();
 
-            List<Performer> performers = em.createQuery("select p from Performer p",Performer.class).getResultList();
+            List<Performer> performers = em.createQuery("select p from Performer p", Performer.class)
+                                           .getResultList();
 
-            em.getTransaction().commit();
+            em.getTransaction()
+              .commit();
 
             List<PerformerDTO> performerDTOList = PerformerMapper.listToDTO(performers);
-            GenericEntity<List<PerformerDTO>> entity = new GenericEntity<>(performerDTOList) {};
-            return Response.ok(entity).build();
-        }finally {
+            GenericEntity<List<PerformerDTO>> entity = new GenericEntity<>(performerDTOList) {
+            };
+            return Response.ok(entity)
+                           .build();
+        } finally {
             em.close();
         }
     }
 
+    //    ========================================================
+    //    ===================  Auth Endpoint =====================
+    //    ========================================================
+
     @POST
-    @Path("/login/{id}")
+    @Path("/login")
     public Response Login(UserDTO userDTO) {
         LOGGER.info("Login with username: " + userDTO.getUsername());
 
@@ -134,9 +186,16 @@ public class ConcertResource {
         try {
             em.getTransaction()
               .begin();
-            User user = em.find(User.class, userDTO.getUsername());
+
+            User user = em.createQuery("select user from User user where user.username = :username", User.class)
+                          .setParameter("username", userDTO.getUsername())
+                          .getResultList()
+                          .stream()
+                          .findFirst()
+                          .orElse(null);
+
             if (user==null) {
-                return Response.status(Response.Status.NOT_FOUND)
+                return Response.status(Response.Status.UNAUTHORIZED)
                                .build();  // user not found
             } else {
                 if (user.getPassword()
@@ -144,13 +203,14 @@ public class ConcertResource {
                     String token = UUID.randomUUID()
                                        .toString();
                     user.setCookie(token);
+                    em.merge(user);
                     em.getTransaction()
                       .commit();
                     return Response.ok(user)
                                    .cookie(makeCookie(token))
                                    .build();
                 } else {
-                    return Response.status(Response.Status.NOT_FOUND)
+                    return Response.status(Response.Status.UNAUTHORIZED)
                                    .build();  // password incorrect
                 }
             }
@@ -159,14 +219,108 @@ public class ConcertResource {
         }
     }
 
+    //    ========================================================
+    //    =================  Booking Endpoint ====================
+    //    ========================================================
 
-    //    Helper method to create a cookie
+    @GET
+    @Path("/bookings")
+    public Response getAllBooking(BookingRequestDTO bookingDTO, @CookieParam("token") Cookie cookie) {
+        LOGGER.info("Get all bookings.");
+
+        EntityManager em = PersistenceManager.instance()
+                                             .createEntityManager();
+
+        try {
+            em.getTransaction()
+              .begin();
+
+            User user = em.find(User.class, cookie.getValue());
+            if (user==null) {
+                return Response.status(Response.Status.UNAUTHORIZED)
+                               .build();
+            }
+
+            List<Booking> bookings = em.createQuery("select booking from Booking booking where booking.user = :user", Booking.class)
+                                       .setParameter("user", user)
+                                       .getResultList();
+
+            List<BookingDTO> bookingsDTO = BookingMapper.listToDTO(bookings);
+            GenericEntity<List<BookingDTO>> bookingsEntity = new GenericEntity<>(bookingsDTO) {
+            };
+
+            em.getTransaction()
+              .commit();
+
+            return Response.ok(bookingsEntity)
+                           .cookie(makeCookie(cookie.getValue()))
+                           .build();
+        } finally {
+            em.close();
+        }
+
+    }
+
+    @GET
+    @Path("/bookings/{id}")
+    public Response getBookingById(@PathParam("id") int id, @CookieParam("token") Cookie cookie) {
+        LOGGER.info("Get booking by id.");
+
+        EntityManager em = PersistenceManager.instance()
+                                             .createEntityManager();
+
+        try {
+            em.getTransaction()
+              .begin();
+
+            User user = em.find(User.class, cookie.getValue());
+
+            if (user==null) {
+                return Response.status(Response.Status.UNAUTHORIZED)
+                               .build();
+            }
+
+            Booking booking = em.find(Booking.class, id);
+
+            if (booking==null) {
+                return Response.status(Response.Status.NOT_FOUND)
+                               .build();
+            }
+
+            if (booking.getUser()!=user) {
+                return Response.status(Response.Status.FORBIDDEN)
+                               .build();
+            }
+
+            em.getTransaction()
+              .commit();
+
+            BookingDTO bookingDTO = BookingMapper.toDTO(booking);
+
+            return Response.ok(bookingDTO)
+                           .cookie(makeCookie(cookie.getValue()))
+                           .build();
+
+        } finally {
+            em.close();
+        }
+
+    }
+
+
+    //    ========================================================
+    //    ===================  Helper Function ===================
+    //    ========================================================
+
     private NewCookie makeCookie(String authToken) {
 
-        NewCookie newCookie = new NewCookie("authToken", authToken);
+        NewCookie newCookie = new NewCookie("auth", authToken);
         LOGGER.info("Generated cookie: " + newCookie.getValue());
-
         return newCookie;
     }
+
+//    private User checkCookies(EntityManager em, Cookie cookie) {
+//        return em.find(User.class, cookie.getValue());
+//    }
 
 }
