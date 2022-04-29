@@ -1,7 +1,9 @@
 package proj.concert.service.services;
 
 import proj.concert.common.dto.*;
+import proj.concert.common.types.BookingStatus;
 import proj.concert.service.domain.*;
+import proj.concert.service.jaxrs.LocalDateTimeParam;
 import proj.concert.service.mappers.*;
 
 import org.slf4j.*;
@@ -9,6 +11,7 @@ import org.slf4j.*;
 import javax.persistence.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.time.LocalDateTime;
 import java.util.*;
 
 
@@ -319,8 +322,55 @@ public class ConcertResource {
         return newCookie;
     }
 
+
+//    ========================================================
+//    ===================  Seat EndPoints  ===================
+//    ========================================================
+
+    @GET
+    @Path("seats/{date}")
+    public Response getSeats(@PathParam("date") String date, @QueryParam("status") BookingStatus status) {
+        LOGGER.debug("getSeats(): Getting " + status.toString() + " seats for date: " + date + " that are " + status);
+
+        EntityManager em = PersistenceManager.instance().createEntityManager();
+
+        try {
+            LocalDateTime ldt = new LocalDateTimeParam(date).getLocalDateTime();
+            List<Seat> seats;
+
+            if (status != BookingStatus.Any) {
+                // Get only booked/non-booked seats for the date
+                boolean isBooked = (status == BookingStatus.Booked);
+
+                seats = em.createQuery("select s from Seat s where s.date = :date and s.isBooked = :status", Seat.class)
+                          .setParameter("date", ldt).setParameter("status", isBooked).getResultList();
+
+            } else {
+                // Get all seats for the date
+                seats = em.createQuery("select s from Seat s where s.date = :date", Seat.class)
+                          .setParameter("date", ldt).getResultList();
+            }
+
+            List<SeatDTO> dtos = new ArrayList<>();
+            for (Seat c : seats) {
+                dtos.add(SeatMapper.toDTO(c));
+            }
+
+            LOGGER.debug("getSeats(): Found " + dtos.size() + " " + status.toString() + " seats");
+
+            GenericEntity<List<SeatDTO>> entity = new GenericEntity<List<SeatDTO>>(dtos) {
+            };
+
+            return Response.ok(entity).build();
+
+        } finally {
+            em.close();
+        }
+    }
+
 //    private User checkCookies(EntityManager em, Cookie cookie) {
 //        return em.find(User.class, cookie.getValue());
 //    }
+
 
 }

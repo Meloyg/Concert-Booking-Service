@@ -44,7 +44,7 @@ public class Seat {
         this.label = label;
     }
 
-    public boolean isBooked() {
+    public boolean getBooked() {
         return isBooked;
     }
 
