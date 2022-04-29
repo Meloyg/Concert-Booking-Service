@@ -10,8 +10,15 @@
 ## Checklist
 *(Leave blank if not applicable)*
 
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] My changes generate no new warnings
-- [ ] I have checked my code and corrected any misspellings
+## Declarations
+- My code follows the style guidelines of this project
+
+- I have performed a self-review of my own code
+
+- I have commented my code, particularly in hard-to-understand areas
+
+- My changes generate no new warnings
+
+- I have checked my code and corrected any misspellings
+
+- [ ] By ticking this box, you agree to all the terms and conditions above.
