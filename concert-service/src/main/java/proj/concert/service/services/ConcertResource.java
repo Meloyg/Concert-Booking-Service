@@ -24,6 +24,7 @@ public class ConcertResource {
 
     // TODO Implement this.
     private static final Logger LOGGER = LoggerFactory.getLogger(ConcertResource.class);
+    private static final String AUTH = "auth";
 
 
     // ========================================================
@@ -230,12 +231,16 @@ public class ConcertResource {
 
     @POST
     @Path("/bookings")
-    public Response attemptBooking(BookingRequestDTO bookingRequestDTO, @CookieParam("auth") Cookie cookie) {
-        LOGGER.debug("Post bookings.");
+    public Response createBooking(BookingRequestDTO bookingRequestDTO, @CookieParam(AUTH) Cookie cookie) {
+        LOGGER.info("Create booking.!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+        if (cookie==null) {
+            return Response.status(Response.Status.UNAUTHORIZED)
+                           .build();
+        }
 
         EntityManager em = PersistenceManager.instance()
                                              .createEntityManager();
-
         try {
             em.getTransaction()
               .begin();
@@ -246,53 +251,62 @@ public class ConcertResource {
                           .stream()
                           .findFirst()
                           .orElse(null);
+
             if (user==null) {
                 return Response.status(Response.Status.UNAUTHORIZED)
                                .build();
             }
 
             Concert concert = em.find(Concert.class, bookingRequestDTO.getConcertId());
-            if (concert==null) {
-                return Response.status(Response.Status.UNAUTHORIZED)
-                               .build();
-            } // incorrect concert id
 
-            LocalDateTime date = bookingRequestDTO.getDate();
-            if (date==null) {
-                return Response.status(Response.Status.UNAUTHORIZED)
+            if (concert==null || !concert.getDates()
+                                         .contains(bookingRequestDTO.getDate())) {
+                return Response.status(Response.Status.BAD_REQUEST)
                                .build();
-            } // concert not on this date
-
-            // get avaliable and wanted seats
-            List<Seat> seatsOnDate = em.createQuery("select seat from Seat seat " +
-                                               "where seat.date = :date and seat.isBooked = false " +
-                                               "and seat.label in :seatLabels", Seat.class)
-                                       .setParameter("date", date)
-                                       .setParameter("seatLabels", bookingRequestDTO.getSeatLabels())
-                                       .getResultList();
-            Booking booking = new Booking(user, concert.getId(), date);
-            for (Seat seat : seatsOnDate) {
-                seat.setBooked(true);
-                booking.getSeats().add(seat);
             }
-            em.persist(booking);
+
+            String query = "select s from Seat s where s.isBooked = false and s.date = :date and s.label in :labels";
+
+            List<Seat> seats = em.createQuery(query, Seat.class)
+                                 .setLockMode(LockModeType.OPTIMISTIC)
+                                 .setParameter("date", bookingRequestDTO.getDate())
+                                 .setParameter("labels", bookingRequestDTO.getSeatLabels())
+                                 .getResultList();
+
+            Booking newBooking = new Booking(user, bookingRequestDTO.getConcertId(), bookingRequestDTO.getDate());
+
+            if (seats.size()!=bookingRequestDTO.getSeatLabels()
+                                               .size()) {
+                return Response.status(Response.Status.FORBIDDEN)
+                               .build();
+            }
+
+            for (Seat seat : seats) {
+                seat.setBooked(true);
+                newBooking.getSeats()
+                          .add(seat);
+            }
+
+            em.persist(newBooking);
             em.getTransaction()
               .commit();
 
-//            return Response.ok(booking)
-//                           .cookie(makeCookie(cookie.getValue()))
-//                           .build();
-            return Response.created(URI.create("concert-service/bookings/" + booking.getId()))
-                           .cookie(new NewCookie("auth", cookie.getValue())).build();
+            return Response.created(URI.create("concert-service/bookings/" + newBooking.getId()))
+                           .cookie(makeCookie(cookie.getValue()))
+                           .build();
+
+        } catch (Exception e) {
+            LOGGER.error("Error creating booking", e);
+            return Response.serverError()
+                           .build();
         } finally {
             em.close();
         }
-
     }
 
     @GET
     @Path("/bookings")
-    public Response getAllBooking(@CookieParam("auth") Cookie cookie) {
+    public Response getAllBooking(@CookieParam(AUTH) Cookie cookie) {
         LOGGER.info("Get all bookings.");
 
         EntityManager em = PersistenceManager.instance()
@@ -306,7 +320,14 @@ public class ConcertResource {
                 return Response.status(Response.Status.UNAUTHORIZED)
                                .build();
             }
-            User user = em.find(User.class, cookie.getValue());
+
+            User user = em.createQuery("select user from User user where user.cookie = :cookie", User.class)
+                          .setParameter("cookie", cookie.getValue())
+                          .getResultList()
+                          .stream()
+                          .findFirst()
+                          .orElse(null);
+
             if (user==null) {
                 return Response.status(Response.Status.UNAUTHORIZED)
                                .build();
@@ -334,7 +355,7 @@ public class ConcertResource {
 
     @GET
     @Path("/bookings/{id}")
-    public Response getBookingById(@PathParam("id") Long id, @CookieParam("auth") Cookie cookie) {
+    public Response getBookingById(@PathParam("id") Long id, @CookieParam(AUTH) Cookie cookie) {
         LOGGER.info("Get booking by id.");
 
         EntityManager em = PersistenceManager.instance()
@@ -344,7 +365,12 @@ public class ConcertResource {
             em.getTransaction()
               .begin();
 
-            User user = em.find(User.class, cookie.getValue());
+            User user = em.createQuery("select user from User user where user.cookie = :cookie", User.class)
+                          .setParameter("cookie", cookie.getValue())
+                          .getResultList()
+                          .stream()
+                          .findFirst()
+                          .orElse(null);
 
             if (user==null) {
                 return Response.status(Response.Status.UNAUTHORIZED)
@@ -387,23 +413,27 @@ public class ConcertResource {
     public Response getSeats(@PathParam("date") String date, @QueryParam("status") BookingStatus status) {
         LOGGER.debug("getSeats(): Getting " + status.toString() + " seats for date: " + date + " that are " + status);
 
-        EntityManager em = PersistenceManager.instance().createEntityManager();
+        EntityManager em = PersistenceManager.instance()
+                                             .createEntityManager();
 
         try {
             LocalDateTime ldt = new LocalDateTimeParam(date).getLocalDateTime();
             List<Seat> seats;
 
-            if (status != BookingStatus.Any) {
+            if (status!=BookingStatus.Any) {
                 // Get only booked/non-booked seats for the date
-                boolean isBooked = (status == BookingStatus.Booked);
+                boolean isBooked = (status==BookingStatus.Booked);
 
                 seats = em.createQuery("select s from Seat s where s.date = :date and s.isBooked = :status", Seat.class)
-                          .setParameter("date", ldt).setParameter("status", isBooked).getResultList();
+                          .setParameter("date", ldt)
+                          .setParameter("status", isBooked)
+                          .getResultList();
 
             } else {
                 // Get all seats for the date
                 seats = em.createQuery("select s from Seat s where s.date = :date", Seat.class)
-                          .setParameter("date", ldt).getResultList();
+                          .setParameter("date", ldt)
+                          .getResultList();
             }
 
             List<SeatDTO> dtos = new ArrayList<>();
@@ -416,7 +446,8 @@ public class ConcertResource {
             GenericEntity<List<SeatDTO>> entity = new GenericEntity<List<SeatDTO>>(dtos) {
             };
 
-            return Response.ok(entity).build();
+            return Response.ok(entity)
+                           .build();
 
         } finally {
             em.close();
@@ -430,55 +461,9 @@ public class ConcertResource {
 
     private NewCookie makeCookie(String authToken) {
 
-        NewCookie newCookie = new NewCookie("auth", authToken);
+        NewCookie newCookie = new NewCookie(AUTH, authToken);
         LOGGER.info("Generated cookie: " + newCookie.getValue());
         return newCookie;
-    }
-
-
-//    ========================================================
-//    ===================  Seat EndPoints  ===================
-//    ========================================================
-
-    @GET
-    @Path("seats/{date}")
-    public Response getSeats(@PathParam("date") String date, @QueryParam("status") BookingStatus status) {
-        LOGGER.debug("getSeats(): Getting " + status.toString() + " seats for date: " + date + " that are " + status);
-
-        EntityManager em = PersistenceManager.instance().createEntityManager();
-
-        try {
-            LocalDateTime ldt = new LocalDateTimeParam(date).getLocalDateTime();
-            List<Seat> seats;
-
-            if (status != BookingStatus.Any) {
-                // Get only booked/non-booked seats for the date
-                boolean isBooked = (status == BookingStatus.Booked);
-
-                seats = em.createQuery("select s from Seat s where s.date = :date and s.isBooked = :status", Seat.class)
-                          .setParameter("date", ldt).setParameter("status", isBooked).getResultList();
-
-            } else {
-                // Get all seats for the date
-                seats = em.createQuery("select s from Seat s where s.date = :date", Seat.class)
-                          .setParameter("date", ldt).getResultList();
-            }
-
-            List<SeatDTO> dtos = new ArrayList<>();
-            for (Seat c : seats) {
-                dtos.add(SeatMapper.toDTO(c));
-            }
-
-            LOGGER.debug("getSeats(): Found " + dtos.size() + " " + status.toString() + " seats");
-
-            GenericEntity<List<SeatDTO>> entity = new GenericEntity<List<SeatDTO>>(dtos) {
-            };
-
-            return Response.ok(entity).build();
-
-        } finally {
-            em.close();
-        }
     }
 
 //    private User checkCookies(EntityManager em, Cookie cookie) {
