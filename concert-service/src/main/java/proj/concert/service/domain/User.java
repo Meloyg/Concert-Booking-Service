@@ -9,7 +9,7 @@ import java.util.Objects;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "USERNAME")
@@ -32,7 +32,7 @@ public class User {
         return id;
     }
 
-    public void setUsername(Long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
