@@ -26,7 +26,6 @@ import java.util.*;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ConcertResource {
 
-    // TODO Implement this.
     private static final Logger LOGGER = LoggerFactory.getLogger(ConcertResource.class);
     private static final String AUTH = "auth";
     private static final List<Subscription> subscriptions = new ArrayList<>();
@@ -249,12 +248,7 @@ public class ConcertResource {
             em.getTransaction()
               .begin();
 
-            User user = em.createQuery("select user from User user where user.cookie = :cookie", User.class)
-                          .setParameter("cookie", cookie.getValue())
-                          .getResultList()
-                          .stream()
-                          .findFirst()
-                          .orElse(null);
+            User user = authUserWithCookie(em, cookie);
 
             if (user==null) {
                 return Response.status(Response.Status.UNAUTHORIZED)
@@ -299,15 +293,19 @@ public class ConcertResource {
                                            .setParameter("date", bookingRequestDTO.getDate())
                                            .getResultList();
 
-            if (!subscriptions.isEmpty()){
+            if (!subscriptions.isEmpty()) {
                 LOGGER.debug("makeBooking(): Checking to notify subscribers");
 
                 List<Subscription> subs = new ArrayList<>();
 
                 for (Subscription sub : subscriptions) {
-                    if ((sub.getSubDto().getConcertId() == bookingRequestDTO.getConcertId())
-                            && (sub.getSubDto().getDate().equals(bookingRequestDTO.getDate()))) {
-                        if (sub.getSubDto().getPercentageBooked() < ((100 * (bookedSeatsList.size()))
+                    if ((sub.getSubDto()
+                            .getConcertId()==bookingRequestDTO.getConcertId())
+                            && (sub.getSubDto()
+                                   .getDate()
+                                   .equals(bookingRequestDTO.getDate()))) {
+                        if (sub.getSubDto()
+                               .getPercentageBooked() < ((100 * (bookedSeatsList.size()))
                                 / TheatreLayout.NUM_SEATS_IN_THEATRE)) {
                             LOGGER.debug("makeBooking(): Threshold reached: Notifying subscriber");
                             subs.add(sub);
@@ -351,12 +349,7 @@ public class ConcertResource {
                                .build();
             }
 
-            User user = em.createQuery("select user from User user where user.cookie = :cookie", User.class)
-                          .setParameter("cookie", cookie.getValue())
-                          .getResultList()
-                          .stream()
-                          .findFirst()
-                          .orElse(null);
+            User user = authUserWithCookie(em, cookie);
 
             if (user==null) {
                 return Response.status(Response.Status.UNAUTHORIZED)
@@ -374,7 +367,7 @@ public class ConcertResource {
             em.getTransaction()
               .commit();
 
-           return Response.ok(bookingsEntity)
+            return Response.ok(bookingsEntity)
                            .cookie(makeCookie(cookie.getValue()))
                            .build();
         } finally {
@@ -395,12 +388,7 @@ public class ConcertResource {
             em.getTransaction()
               .begin();
 
-            User user = em.createQuery("select user from User user where user.cookie = :cookie", User.class)
-                          .setParameter("cookie", cookie.getValue())
-                          .getResultList()
-                          .stream()
-                          .findFirst()
-                          .orElse(null);
+            User user = authUserWithCookie(em, cookie);
 
             if (user==null) {
                 return Response.status(Response.Status.UNAUTHORIZED)
@@ -485,112 +473,136 @@ public class ConcertResource {
     }
 
     //    ========================================================
-    //    =================  Subscribe Function ==================
+    //    =================  Subscribe Endpoint ==================
     //    ========================================================
 
     @POST
     @Path("/subscribe/concertInfo")
-    public void subscribe (ConcertInfoSubscriptionDTO dto,  @CookieParam(AUTH) Cookie cookie, @Suspended AsyncResponse resp){
+    public void subscribe(ConcertInfoSubscriptionDTO dto, @CookieParam(AUTH) Cookie cookie, @Suspended AsyncResponse resp) {
         LOGGER.info("subscribe(): Attempting to subscribe");
 
-        if (cookie == null) {
+        if (cookie==null) {
             LOGGER.info("subscribe(): Not logged in");
-            resp.resume(Response.status(Response.Status.UNAUTHORIZED).build());
+            resp.resume(Response.status(Response.Status.UNAUTHORIZED)
+                                .build());
         }
 
-        EntityManager em = PersistenceManager.instance().createEntityManager();
+        EntityManager em = PersistenceManager.instance()
+                                             .createEntityManager();
 
-        try{
+        try {
 
-            User user = em.createQuery("select user from User user where user.cookie = :cookie", User.class)
-                          .setParameter("cookie", cookie.getValue())
-                          .getResultList()
-                          .stream()
-                          .findFirst()
-                          .orElse(null);
+            User user = authUserWithCookie(em, cookie);
 
             if (user==null) {
-                resp.resume(Response.status(Response.Status.UNAUTHORIZED).build());
+                resp.resume(Response.status(Response.Status.UNAUTHORIZED)
+                                    .build());
             }
             // find the concert
             Concert concert = em.find(Concert.class, dto.getConcertId());
 
             // concert not exist
-            if(concert == null){
-                LOGGER.debug("subscribe(): Concert with id: " + dto.getConcertId() + "does not exists") ;
-                resp.resume(Response.status(Response.Status.BAD_REQUEST).build());
+            if (concert==null) {
+                LOGGER.debug("subscribe(): Concert with id: " + dto.getConcertId() + "does not exists");
+                resp.resume(Response.status(Response.Status.BAD_REQUEST)
+                                    .build());
             }
 
             // concert is not on right date
-            if(!concert.getDates().contains(dto.getDate())){
-                LOGGER.debug("subscribe(): Concert with id: " + dto.getConcertId() + "does not held on" + concert.getDates().toString()) ;
-                resp.resume(Response.status(Response.Status.BAD_REQUEST).build());
+            if (!concert.getDates()
+                        .contains(dto.getDate())) {
+                LOGGER.debug("subscribe(): Concert with id: " + dto.getConcertId() + "does not held on" + concert.getDates()
+                                                                                                                 .toString());
+                resp.resume(Response.status(Response.Status.BAD_REQUEST)
+                                    .build());
             }
 
-            List <Booking> allmatchedBookings = em.createQuery("select b from Booking b where b.concertId = : id and b.date = :date", Booking.class)
-                                                  .setParameter("id",dto.getConcertId())
-                                                  .setParameter("date", dto.getDate())
-                                                  .getResultList();
+            List<Booking> allmatchedBookings = em.createQuery("select b from Booking b where b.concertId = : id and b.date = :date", Booking.class)
+                                                 .setParameter("id", dto.getConcertId())
+                                                 .setParameter("date", dto.getDate())
+                                                 .getResultList();
 
             LOGGER.debug("subscribe(): Number of bookings: " + allmatchedBookings.size());
             List<Seat> allmatchedSeats = new ArrayList<>();
-            for (Booking b : allmatchedBookings){
+            for (Booking b : allmatchedBookings) {
                 allmatchedSeats.addAll(b.getSeats());
             }
             LOGGER.debug("subscribe(): Number of booked seats: " + allmatchedSeats.size());
             LOGGER.debug("subscribe(): Threshold: " + dto.getPercentageBooked() + "%");
 
-            if(dto.getPercentageBooked() < (allmatchedSeats.size() / TheatreLayout.NUM_SEATS_IN_THEATRE) * 100){
+            if (dto.getPercentageBooked() < (allmatchedSeats.size() / TheatreLayout.NUM_SEATS_IN_THEATRE) * 100) {
                 LOGGER.debug("subscribe(): Threshold reached: Notifying subscriber");
                 ConcertInfoNotificationDTO infoDto = new ConcertInfoNotificationDTO(
                         TheatreLayout.NUM_SEATS_IN_THEATRE - allmatchedSeats.size());
-                resp.resume(Response.ok(infoDto).build());
+                resp.resume(Response.ok(infoDto)
+                                    .build());
                 return;
             }
             // Otherwise add to subscriber list to notify later
             LOGGER.debug("subscribe(): Successfully subscribed");
             subscriptions.add(new Subscription(dto, resp));
 
-        }finally {
+        } finally {
             em.close();
         }
 
 
     }
 
-    @POST
-    public void postToSubs(List<Subscription> subs, int numSeatsRemaining) {
+
+    //    ========================================================
+    //    ==================  Helper Functions ===================
+    //    ========================================================
+
+    /**
+     * Helper function to generate a Cookie with a token.
+     * @param authToken
+     * @return NewCookie
+     */
+    private NewCookie makeCookie(String authToken) {
+        NewCookie newCookie = new NewCookie(AUTH, authToken);
+        LOGGER.info("Generated cookie: " + newCookie.getValue());
+        return newCookie;
+    }
+
+    /**
+     * Helper function to post a notification to all subscribers.
+     * @param SubscriptionList
+     * @param numSeatsRemaining
+     */
+    private void postToSubs(List<Subscription> subs, int numSeatsRemaining) {
         LOGGER.debug("postToSubs(): Notifying " + subs.size() + " subscribers");
 
         synchronized (subscriptions) {
             for (Subscription sub : subs) {
-                LOGGER.debug("postToSubs(): Notifying sub for concert id: " + sub.getSubDto().getConcertId()
-                        + " and threshold: " + sub.getSubDto().getPercentageBooked() + "%");
+                LOGGER.debug("postToSubs(): Notifying sub for concert id: " + sub.getSubDto()
+                                                                                 .getConcertId()
+                        + " and threshold: " + sub.getSubDto()
+                                                  .getPercentageBooked() + "%");
 
                 ConcertInfoNotificationDTO dto = new ConcertInfoNotificationDTO(numSeatsRemaining);
-                sub.getResponse().resume(Response.ok(dto).build());
+                sub.getResponse()
+                   .resume(Response.ok(dto)
+                                   .build());
 
                 subscriptions.remove(sub);
             }
         }
     }
 
-
-
-    //    ========================================================
-    //    ===================  Helper Function ===================
-    //    ========================================================
-
-    private NewCookie makeCookie(String authToken) {
-
-        NewCookie newCookie = new NewCookie(AUTH, authToken);
-        LOGGER.info("Generated cookie: " + newCookie.getValue());
-        return newCookie;
+    /**
+     * Helper function to find a user by their cookie.
+     * @param EntityManager
+     * @param Cookie
+     * @return User or Null
+     */
+    private User authUserWithCookie(EntityManager em,Cookie cookie) {
+        return em.createQuery("select user from User user where user.cookie = :cookie", User.class)
+                      .setParameter("cookie", cookie.getValue())
+                      .getResultList()
+                      .stream()
+                      .findFirst()
+                      .orElse(null);
     }
-
-//    private User checkCookies(EntityManager em, Cookie cookie) {
-//        return em.find(User.class, cookie.getValue());
-//    }
-
 
 }
