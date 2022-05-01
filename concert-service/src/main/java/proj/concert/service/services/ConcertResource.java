@@ -1,25 +1,31 @@
 package proj.concert.service.services;
 
 import proj.concert.common.dto.*;
-import proj.concert.common.types.BookingStatus;
+import proj.concert.common.types.*;
 import proj.concert.service.domain.*;
 import proj.concert.service.jaxrs.LocalDateTimeParam;
 import proj.concert.service.mappers.*;
 
 import org.slf4j.*;
-import proj.concert.service.util.Subscription;
-import proj.concert.service.util.TheatreLayout;
+import proj.concert.service.util.*;
 
 import javax.persistence.*;
 import javax.ws.rs.*;
-import javax.ws.rs.container.AsyncResponse;
-import javax.ws.rs.container.Suspended;
+import javax.ws.rs.container.*;
 import javax.ws.rs.core.*;
 import java.net.URI;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
+
+/**
+ * This class is a resource class for ConcertService.
+ * It contains all the RESTful web services.
+ *
+ * @author Melo Guan, Nancy Zhong, Alex Cao
+ * @version 1.0
+ */
 
 @Path("/concert-service")
 @Produces(MediaType.APPLICATION_JSON)
@@ -581,6 +587,7 @@ public class ConcertResource {
 
     /**
      * Helper function to generate a Cookie with a token.
+     *
      * @param authToken
      * @return NewCookie
      */
@@ -592,6 +599,7 @@ public class ConcertResource {
 
     /**
      * Helper function to post a notification to all subscribers.
+     *
      * @param SubscriptionList
      * @param numSeatsRemaining
      */
@@ -617,17 +625,18 @@ public class ConcertResource {
 
     /**
      * Helper function to find a user by their cookie.
+     *
      * @param EntityManager
      * @param Cookie
      * @return User or Null
      */
-    private User authUserWithCookie(EntityManager em,Cookie cookie) {
+    private User authUserWithCookie(EntityManager em, Cookie cookie) {
         return em.createQuery("select user from User user where user.cookie = :cookie", User.class)
-                      .setParameter("cookie", cookie.getValue())
-                      .getResultList()
-                      .stream()
-                      .findFirst()
-                      .orElse(null);
+                 .setParameter("cookie", cookie.getValue())
+                 .getResultList()
+                 .stream()
+                 .findFirst()
+                 .orElse(null);
     }
 
 }
