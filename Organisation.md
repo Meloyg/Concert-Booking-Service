@@ -13,8 +13,10 @@ ProjectTeam 3
 - Nancy Zhong (nancy111573)
     - Implemented `Performer` and `Concert` domain, and edited other domain classes to pass initial database set up. Implemented first version of post `booking`, `concerts/{id}` and `performers/{id}` endpoints. Helped in `subscribe` and `login` endpoints.
     - Participated in group meetings as well as individual coding sections.
-
 - Alex Cao (Alex-Beep-Cao)
+    - Create domain files, implemented some methods in `ConcertMapper` and `PerformerMapper`. Implemented `Seats` and `subscribe` endpoints. Discussed with teammates about other endpoints also try to implemented `Booking` endpoints in own branch.
+    - Participated in group meetings as well as individual coding sections.
+
 
 ## Description
 
@@ -28,10 +30,4 @@ TBD
 
 
 
-## 
-3. Nancy Zhong (nancy111573): A good team member, help to find bugs, pay lots of attention to this assignment, has a positive attitude, is willing to help other teammates, and discuss with other teammates.
-4. Build folder structure, implement domains, booking functionality, seat functionality, and comment on the project.
-5. Alex Cao (Alex-Beep-Cao): A good team member, willing to attribute on assignment, positive attitude, willing to help
-6. other teammates and discussed with other teammates.
-7. Build file structure, implement domains, seat functionality, subscribe functionality, and comment on the project.
 
