@@ -18,7 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
- * A booking for a concert
+ * Booking domain class
  */
 @Entity
 @Table(name = "BOOKINGS")
@@ -93,13 +93,13 @@ public class Booking {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this==obj) {
             return true;
         }
         if (!(obj instanceof Booking)) {
             return false;
         }
         Booking other = (Booking) obj;
-        return concertId == other.concertId && Objects.equals(date, other.date) && Objects.equals(id, other.id) && Objects.equals(user, other.user);
+        return concertId==other.concertId && Objects.equals(date, other.date) && Objects.equals(id, other.id) && Objects.equals(user, other.user);
     }
 }

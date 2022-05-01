@@ -15,28 +15,34 @@ import proj.concert.common.jackson.LocalDateTimeDeserializer;
 import proj.concert.common.jackson.LocalDateTimeSerializer;
 import proj.concert.service.jaxrs.LocalDateTimeParam;
 
+/**
+ * Concert domain class.
+ */
 @Entity
 @Table(name = "CONCERTS")
-public class Concert{
+public class Concert {
 
     @Id
     @GeneratedValue
     private Long id;
     private String title;
-    @Column(name="IMAGE_NAME")
+    @Column(name = "IMAGE_NAME")
     private String imageName;
-    @Column(name="BLURB",columnDefinition="LONGTEXT")
+    @Column(name = "BLURB", columnDefinition = "LONGTEXT")
     private String blurb;
     @ManyToMany(cascade = {CascadeType.PERSIST})
     @Fetch(FetchMode.SUBSELECT)
-    @JoinTable(name="CONCERT_PERFORMER",
-            joinColumns={@JoinColumn(name="CONCERT_ID")},
-            inverseJoinColumns={@JoinColumn(name="PERFORMER_ID")})
+    @JoinTable(name = "CONCERT_PERFORMER",
+            joinColumns = {@JoinColumn(name = "CONCERT_ID")},
+            inverseJoinColumns = {@JoinColumn(name = "PERFORMER_ID")})
     private Set<Performer> performers;
     @ElementCollection
-    @CollectionTable(name="CONCERT_DATES")
+    @CollectionTable(name = "CONCERT_DATES")
     @Column(name = "DATE")
     private Set<LocalDateTime> dates = new HashSet<>();
+
+    public Concert() {
+    }
 
     public Concert(Long id, String title, String imageName, String blurb, Set<LocalDateTime> dates, Set<Performer> performers) {
         this.id = id;
@@ -45,10 +51,6 @@ public class Concert{
         this.blurb = blurb;
         this.dates = dates;
         this.performers = performers;
-    }
-
-    public Concert() {
-        this(null, null, null, null, null, null);
     }
 
     public Long getId() {
@@ -100,25 +102,10 @@ public class Concert{
     }
 
     @Override
-    public String toString() {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append("Concert, id: ");
-        buffer.append(id);
-        buffer.append(", title: ");
-        buffer.append(title);
-        buffer.append(", date: ");
-        buffer.append(dates.toString());
-        buffer.append(", featuring: ");
-        buffer.append(performers.toString());
-
-        return buffer.toString();
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof Concert))
             return false;
-        if (obj == this)
+        if (obj==this)
             return true;
         Concert rhs = (Concert) obj;
         return new EqualsBuilder().

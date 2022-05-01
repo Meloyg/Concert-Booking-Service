@@ -5,9 +5,10 @@ import proj.concert.service.domain.*;
 
 import java.util.*;
 
+/**
+ * Mapper class for converting between Performer objects and PerformerDTO objects.
+ */
 public class PerformerMapper {
-    private PerformerMapper() {
-    }
 
     public static PerformerDTO toDTO(Performer c) {
         return new PerformerDTO(c.getId(), c.getName(), c.getImageName(), c.getGenre(), c.getBlurb());

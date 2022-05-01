@@ -5,9 +5,10 @@ import proj.concert.service.domain.*;
 
 import java.util.*;
 
+/**
+ * Mapper class for Concert domain object and ConcertDTO/ConcertSummaryDTO object.
+ */
 public class ConcertMapper {
-    private ConcertMapper() {
-    }
 
     public static ConcertDTO toDTO(Concert c) {
         ConcertDTO dto = new ConcertDTO(c.getId(), c.getTitle(), c.getImageName(), c.getBlurb());

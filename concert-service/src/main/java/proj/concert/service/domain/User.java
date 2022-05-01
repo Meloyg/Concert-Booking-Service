@@ -4,6 +4,10 @@ package proj.concert.service.domain;
 import javax.persistence.*;
 import java.util.Objects;
 
+
+/**
+ * User domain class
+ */
 @Entity
 @Table(name = "USERS")
 public class User {
@@ -62,8 +66,8 @@ public class User {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this==o) return true;
+        if (o==null || getClass()!=o.getClass()) return false;
 
         User user = (User) o;
 
@@ -75,14 +79,4 @@ public class User {
         return Objects.hash(username);
     }
 
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", version=" + version +
-                ", cookie='" + cookie + '\'' +
-                '}';
-    }
 }

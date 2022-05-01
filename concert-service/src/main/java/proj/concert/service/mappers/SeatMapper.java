@@ -5,7 +5,11 @@ import proj.concert.service.domain.*;
 
 import java.util.*;
 
+/**
+ * Mapper class for converting between Seat objects and SeatDTO objects.
+ */
 public class SeatMapper {
+
     public static SeatDTO toDTO(Seat seat) {
         return new SeatDTO(seat.getLabel(), seat.getPrice());
     }

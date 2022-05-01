@@ -6,7 +6,12 @@ import proj.concert.service.domain.*;
 import java.util.*;
 import java.util.stream.*;
 
+
+/**
+ * Mapper class for converting between Booking and BookingDTO objects.
+ */
 public class BookingMapper {
+    
     public static BookingDTO toDTO(Booking booking) {
         return new BookingDTO(booking.getConcertId(), booking.getDate(),
                 booking.getSeats()

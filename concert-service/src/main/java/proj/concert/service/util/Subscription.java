@@ -4,6 +4,9 @@ import proj.concert.common.dto.ConcertInfoSubscriptionDTO;
 
 import javax.ws.rs.container.AsyncResponse;
 
+/**
+ * Utility class that handles subscription objects.
+ */
 public class Subscription {
 
     ConcertInfoSubscriptionDTO subDto;

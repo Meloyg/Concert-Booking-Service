@@ -6,19 +6,22 @@ import proj.concert.common.types.Genre;
 
 import javax.persistence.*;
 
+/**
+ * Performer domain class.
+ */
 @Entity
-@Table(name="PERFORMERS")
+@Table(name = "PERFORMERS")
 public class Performer {
 
     @Id
     @GeneratedValue
     private Long id;
     private String name;
-    @Column(name="IMAGE_NAME")
+    @Column(name = "IMAGE_NAME")
     private String imageName;
     @Enumerated(EnumType.STRING)
     private Genre genre;
-    @Column(name="BLURB",columnDefinition="LONGTEXT") //allow blurb to store more text
+    @Column(name = "BLURB", columnDefinition = "LONGTEXT") //allow blurb to store more text
     private String blurb;
 
     public Performer() {
@@ -74,9 +77,9 @@ public class Performer {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
+        if (this==obj) return true;
 
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (obj==null || getClass()!=obj.getClass()) return false;
 
         Performer other = (Performer) obj;
 
@@ -98,13 +101,4 @@ public class Performer {
                 .toHashCode();
     }
 
-    @Override
-    public String toString() {
-        return "Performer{" +
-                "id=" + id +
-                ", name=" + name +
-                ", imageName=" + imageName +
-                ", genre=" + genre +
-                '}';
-    }
 }

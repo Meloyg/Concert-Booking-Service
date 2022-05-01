@@ -5,6 +5,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Seat domain class
+ */
 @Entity
 @Table(name = "SEAT")
 public class Seat {
@@ -19,7 +22,8 @@ public class Seat {
     @Version
     private Long version;
 
-    public Seat() {}
+    public Seat() {
+    }
 
     public Seat(String label, boolean isBooked, LocalDateTime date, BigDecimal price) {
         this.label = label;
@@ -70,10 +74,10 @@ public class Seat {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this==o) return true;
+        if (o==null || getClass()!=o.getClass()) return false;
         Seat seat = (Seat) o;
-        return isBooked == seat.isBooked &&
+        return isBooked==seat.isBooked &&
                 Objects.equals(id, seat.id) &&
                 Objects.equals(label, seat.label) &&
                 Objects.equals(date, seat.date) &&
@@ -83,17 +87,6 @@ public class Seat {
     @Override
     public int hashCode() {
         return Objects.hash(id, label, isBooked, date, price);
-    }
-
-    @Override
-    public String toString() {
-        return "Seat{" +
-                "id=" + id +
-                ", label='" + label + '\'' +
-                ", isBooked=" + isBooked +
-                ", date=" + date +
-                ", price=" + price +
-                '}';
     }
 
 }

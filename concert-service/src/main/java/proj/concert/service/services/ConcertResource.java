@@ -5,9 +5,9 @@ import proj.concert.common.types.*;
 import proj.concert.service.domain.*;
 import proj.concert.service.jaxrs.LocalDateTimeParam;
 import proj.concert.service.mappers.*;
+import proj.concert.service.util.*;
 
 import org.slf4j.*;
-import proj.concert.service.util.*;
 
 import javax.persistence.*;
 import javax.ws.rs.*;
@@ -21,7 +21,8 @@ import java.util.*;
 
 /**
  * This class is a resource class for ConcertService.
- * It contains all the RESTful web services.
+ * The service module is responsible for implementing the Web service
+ * and persistence aspects of the concert application.
  *
  * @author Melo Guan, Nancy Zhong, Alex Cao
  * @version 1.0
@@ -65,7 +66,10 @@ public class ConcertResource {
                 return Response.status(Response.Status.NOT_FOUND)
                                .build();
             }
-            return Response.ok(ConcertMapper.toDTO(concert))
+
+            ConcertDTO concertDTO = ConcertMapper.toDTO(concert);
+
+            return Response.ok(concertDTO)
                            .build();
         } finally {
             em.close();
@@ -107,7 +111,7 @@ public class ConcertResource {
     /**
      * Retrieves the summary of all Concerts.
      *
-     * @return concertSummary.
+     * @return a list of concert summaries.
      */
     @GET
     @Path("/concerts/summaries")
@@ -177,7 +181,7 @@ public class ConcertResource {
     /**
      * Retrieves all Performer.
      *
-     * @return all performers.
+     * @return a list of all Performer.
      */
     @GET
     @Path("/performers")
@@ -213,7 +217,7 @@ public class ConcertResource {
      * Login a user.
      *
      * @param UserDTO
-     * @return the user with cookie.
+     * @return the user with the new generated cookie.
      */
     @POST
     @Path("/login")
@@ -268,7 +272,7 @@ public class ConcertResource {
      * notify any subscribed user when a concert is about to sell out.
      *
      * @param BookingRequestDTO
-     * @param cookie token of the user that wants to book
+     * @param cookie            token of the user that wants to book
      * @return URI that directs to the created booking
      */
     @POST
@@ -424,7 +428,7 @@ public class ConcertResource {
     /**
      * Retrieves a Booking by id.
      *
-     * @param id the id of the booking to retrieve.
+     * @param id     the id of the booking to retrieve.
      * @param cookie token of the current user.
      * @return the booking.
      */
@@ -481,7 +485,7 @@ public class ConcertResource {
     /**
      * Retrieves Seats .
      *
-     * @param date the booking of concert's dates.
+     * @param date   the booking of concert's dates.
      * @param status seats status.
      * @return seats.
      */
@@ -538,10 +542,9 @@ public class ConcertResource {
     /**
      * Send subscribe message .
      *
-     * @param dto the ConcertInfoSubscriptionDTO
+     * @param dto    the ConcertInfoSubscriptionDTO
      * @param cookie token of the user that wants to book
-     * @param resp AsyncResponse.
-     * @return ConcertInfoNotificationDTO.
+     * @param resp   AsyncResponse.
      */
     @POST
     @Path("/subscribe/concertInfo")
@@ -573,7 +576,7 @@ public class ConcertResource {
             if (!concert.getDates()
                         .contains(dto.getDate())) {
                 LOGGER.debug("subscribe(): Concert id: " + dto.getConcertId() + "does not held on" + concert.getDates()
-                                                                                                                 .toString());
+                                                                                                            .toString());
                 resp.resume(Response.status(Response.Status.BAD_REQUEST)
                                     .build());
             }
@@ -656,6 +659,7 @@ public class ConcertResource {
 
     /**
      * Helper function to find a user by their cookie.
+     * If the cookie is not found, return null.
      *
      * @param EntityManager
      * @param Cookie
