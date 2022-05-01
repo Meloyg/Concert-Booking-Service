@@ -1,5 +1,8 @@
 package proj.concert.service.domain;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +35,7 @@ public class Booking {
     private LocalDateTime date;
 
     @OneToMany(fetch = FetchType.EAGER)
+    @Fetch(FetchMode.SUBSELECT)
     private List<Seat> seats = new ArrayList<>();
 
     public Booking() {

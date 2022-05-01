@@ -263,10 +263,18 @@ public class ConcertResource {
     //    =================  Booking Endpoint ====================
     //    ========================================================
 
+    /**
+     * Attempt to create a booking and
+     * notify any subscribed user when a concert is about to sell out.
+     *
+     * @param BookingRequestDTO
+     * @param cookie token of the user that wants to book
+     * @return URI that directs to the created booking
+     */
     @POST
     @Path("/bookings")
     public Response createBooking(BookingRequestDTO bookingRequestDTO, @CookieParam(AUTH) Cookie cookie) {
-        LOGGER.info("Create booking.!!!!!!!!!!!!!!!!!!!!!!!!!");
+        LOGGER.info("Create booking");
 
         if (cookie==null) {
             return Response.status(Response.Status.UNAUTHORIZED)
@@ -363,6 +371,12 @@ public class ConcertResource {
         }
     }
 
+    /**
+     * Retrieves all Bookings of one user.
+     *
+     * @param cookie token of the current user.
+     * @return all Bookings of that user.
+     */
     @GET
     @Path("/bookings")
     public Response getAllBooking(@CookieParam(AUTH) Cookie cookie) {
@@ -407,6 +421,13 @@ public class ConcertResource {
 
     }
 
+    /**
+     * Retrieves a Booking by id.
+     *
+     * @param id the id of the booking to retrieve.
+     * @param cookie token of the current user.
+     * @return the booking.
+     */
     @GET
     @Path("/bookings/{id}")
     public Response getBookingById(@PathParam("id") Long id, @CookieParam(AUTH) Cookie cookie) {

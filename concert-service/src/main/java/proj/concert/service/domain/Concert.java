@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import proj.concert.common.jackson.LocalDateTimeDeserializer;
 import proj.concert.common.jackson.LocalDateTimeSerializer;
 import proj.concert.service.jaxrs.LocalDateTimeParam;
@@ -27,7 +29,8 @@ public class Concert{
     private String imageName;
     @Column(name="BLURB",columnDefinition="LONGTEXT")
     private String blurb;
-    @ManyToMany(cascade = {CascadeType.PERSIST}, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = {CascadeType.PERSIST})
+    @Fetch(FetchMode.SUBSELECT)
     @JoinTable(name="CONCERT_PERFORMER",
             joinColumns={@JoinColumn(name="CONCERT_ID")},
             inverseJoinColumns={@JoinColumn(name="PERFORMER_ID")})
@@ -35,8 +38,6 @@ public class Concert{
     @ElementCollection
     @CollectionTable(name="CONCERT_DATES")
     @Column(name = "DATE")
-//    @JsonSerialize(using = LocalDateTimeSerializer.class)
-//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private Set<LocalDateTime> dates = new HashSet<>();
 
     public Concert(Long id, String title, String imageName, String blurb, Set<LocalDateTime> dates, Set<Performer> performers) {
@@ -92,14 +93,10 @@ public class Concert{
         this.performers = performers;
     }
 
-//    @JsonSerialize(using = LocalDateTimeSerializer.class)
-//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     public Set<LocalDateTime> getDates() {
         return dates;
     }
 
-//    @JsonSerialize(using = LocalDateTimeSerializer.class)
-//    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     public void setDates(Set<LocalDateTime> dates) {
         this.dates = dates;
     }
