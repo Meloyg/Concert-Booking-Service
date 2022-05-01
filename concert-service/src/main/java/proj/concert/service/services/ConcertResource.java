@@ -22,6 +22,7 @@ import java.util.*;
 /**
  * This class is a resource class for ConcertService.
  * It contains all the RESTful web services.
+ *
  * @author Melo Guan, Nancy Zhong, Alex Cao
  * @version 1.0
  */
