@@ -36,8 +36,6 @@ public class ConcertResource {
 
     /**
      * Retrieves a Concert based on its unique id.
-     * The HTTP response code is either 200 or 404, depending on the existence of
-     * the required concert.
      *
      * @param id the unique id of the Concert to be returned.
      * @return a concert.
@@ -68,6 +66,11 @@ public class ConcertResource {
         }
     }
 
+    /**
+     * Retrieves a list of all Concerts.
+     *
+     * @return a list of concerts.
+     */
     @GET
     @Path("/concerts")
     public Response getAllConcerts() {
@@ -95,6 +98,11 @@ public class ConcertResource {
         }
     }
 
+    /**
+     * Retrieves the summary of all Concerts.
+     *
+     * @return concertSummary.
+     */
     @GET
     @Path("/concerts/summaries")
     public Response getConcertSummaries() {
@@ -126,6 +134,12 @@ public class ConcertResource {
     //    ================  Performer Endpoint ===================
     //    ========================================================
 
+    /**
+     * Retrieves a Performer by id.
+     *
+     * @param id the id of the performer to retrieve.
+     * @return the performer.
+     */
     @GET
     @Path("/performers/{id}")
     public Response retrievePerformerById(@PathParam("id") long id) {
@@ -154,6 +168,11 @@ public class ConcertResource {
         }
     }
 
+    /**
+     * Retrieves all Performer.
+     *
+     * @return all performers.
+     */
     @GET
     @Path("/performers")
     public Response getAllPerformers() {
@@ -184,6 +203,12 @@ public class ConcertResource {
     //    ===================  Auth Endpoint =====================
     //    ========================================================
 
+    /**
+     * Login a user.
+     *
+     * @param UserDTO
+     * @return the user with cookie.
+     */
     @POST
     @Path("/login")
     public Response Login(UserDTO userDTO) {
