@@ -19,8 +19,6 @@ import proj.concert.service.jaxrs.LocalDateTimeParam;
 @Table(name = "CONCERTS")
 public class Concert{
 
-    // TODO Implement this class.
-
     @Id
     @GeneratedValue
     private Long id;

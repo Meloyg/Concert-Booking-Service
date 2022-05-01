@@ -23,7 +23,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "BOOKINGS")
 public class Booking {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

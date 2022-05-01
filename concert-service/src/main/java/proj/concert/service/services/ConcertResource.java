@@ -478,6 +478,13 @@ public class ConcertResource {
     //    =================  Seats Endpoint ====================
     //    ========================================================
 
+    /**
+     * Retrieves Seats .
+     *
+     * @param date the booking of concert's dates.
+     * @param status seats status.
+     * @return seats.
+     */
     @GET
     @Path("seats/{date}")
     public Response getSeats(@PathParam("date") String date, @QueryParam("status") BookingStatus status) {
@@ -528,13 +535,22 @@ public class ConcertResource {
     //    =================  Subscribe Endpoint ==================
     //    ========================================================
 
+    /**
+     * Send subscribe message .
+     *
+     * @param dto the ConcertInfoSubscriptionDTO
+     * @param cookie token of the user that wants to book
+     * @param resp AsyncResponse.
+     * @return ConcertInfoNotificationDTO.
+     */
     @POST
     @Path("/subscribe/concertInfo")
     public void subscribe(ConcertInfoSubscriptionDTO dto, @CookieParam(AUTH) Cookie cookie, @Suspended AsyncResponse resp) {
-        LOGGER.info("subscribe(): Attempting to subscribe");
+        LOGGER.debug("subscribe():Trying to subscribe");
 
+        // Check cookie, make sure user is authorized
         if (cookie==null) {
-            LOGGER.info("subscribe(): Not logged in");
+            LOGGER.debug("subscribe(): User not logged in");
             resp.resume(Response.status(Response.Status.UNAUTHORIZED)
                                 .build());
         }
@@ -543,19 +559,12 @@ public class ConcertResource {
                                              .createEntityManager();
 
         try {
-
-            User user = authUserWithCookie(em, cookie);
-
-            if (user==null) {
-                resp.resume(Response.status(Response.Status.UNAUTHORIZED)
-                                    .build());
-            }
             // find the concert
             Concert concert = em.find(Concert.class, dto.getConcertId());
 
             // concert not exist
             if (concert==null) {
-                LOGGER.debug("subscribe(): Concert with id: " + dto.getConcertId() + "does not exists");
+                LOGGER.debug("subscribe(): Concert id: " + dto.getConcertId() + "does not exists");
                 resp.resume(Response.status(Response.Status.BAD_REQUEST)
                                     .build());
             }
@@ -563,7 +572,7 @@ public class ConcertResource {
             // concert is not on right date
             if (!concert.getDates()
                         .contains(dto.getDate())) {
-                LOGGER.debug("subscribe(): Concert with id: " + dto.getConcertId() + "does not held on" + concert.getDates()
+                LOGGER.debug("subscribe(): Concert id: " + dto.getConcertId() + "does not held on" + concert.getDates()
                                                                                                                  .toString());
                 resp.resume(Response.status(Response.Status.BAD_REQUEST)
                                     .build());
@@ -575,32 +584,33 @@ public class ConcertResource {
                                                  .getResultList();
 
             LOGGER.debug("subscribe(): Number of bookings: " + allmatchedBookings.size());
+
             List<Seat> allmatchedSeats = new ArrayList<>();
+
             for (Booking b : allmatchedBookings) {
                 allmatchedSeats.addAll(b.getSeats());
             }
-            LOGGER.debug("subscribe(): Number of booked seats: " + allmatchedSeats.size());
-            LOGGER.debug("subscribe(): Threshold: " + dto.getPercentageBooked() + "%");
+
+            LOGGER.debug("subscribe(): Booked seats: " + allmatchedSeats.size());
+            LOGGER.debug("subscribe(): This concert has been booked: " + dto.getPercentageBooked() + "%");
 
             if (dto.getPercentageBooked() < (allmatchedSeats.size() / TheatreLayout.NUM_SEATS_IN_THEATRE) * 100) {
-                LOGGER.debug("subscribe(): Threshold reached: Notifying subscriber");
+
+                LOGGER.debug("subscribe():Please notifying subscriber");
                 ConcertInfoNotificationDTO infoDto = new ConcertInfoNotificationDTO(
                         TheatreLayout.NUM_SEATS_IN_THEATRE - allmatchedSeats.size());
                 resp.resume(Response.ok(infoDto)
                                     .build());
                 return;
             }
-            // Otherwise add to subscriber list to notify later
+            // Added in the list will be notified later
             LOGGER.debug("subscribe(): Successfully subscribed");
             subscriptions.add(new Subscription(dto, resp));
 
         } finally {
             em.close();
         }
-
-
     }
-
 
     //    ========================================================
     //    ==================  Helper Functions ===================
