@@ -581,7 +581,7 @@ public class ConcertResource {
                                     .build());
             }
 
-            List<Booking> allmatchedBookings = em.createQuery("select b from Booking b where b.concertId = : id and b.date = :date", Booking.class)
+            List<Booking> allmatchedBookings = em.createQuery("select b from Booking b join fetch b.seats where b.concertId = : id and b.date = :date", Booking.class)
                                                  .setParameter("id", dto.getConcertId())
                                                  .setParameter("date", dto.getDate())
                                                  .getResultList();

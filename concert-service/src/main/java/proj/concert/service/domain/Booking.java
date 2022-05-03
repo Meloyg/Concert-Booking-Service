@@ -33,8 +33,7 @@ public class Booking {
     private long concertId;
     private LocalDateTime date;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @Fetch(FetchMode.SUBSELECT)
+    @OneToMany
     private List<Seat> seats = new ArrayList<>();
 
     public Booking() {
