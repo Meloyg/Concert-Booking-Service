@@ -27,7 +27,7 @@ The optimistic concurrency control (OCC) strategy is used to minimise the chance
 When dealing with several clients, it's likely that they'll try to book seats at the same time.
 To prevent this from happening, the JPA implementation is configured to disable concurrent writing on commits.
 When anything on the same table is written to, or even merely when the table is read, naive implementations will throw this error.
-And it only throws this issue when the same seat is accessed via optimistic concurrency.
+And it only throws this error when the same seat is accessed via optimistic concurrency.
 This implies that multiple people may book seats at the same time instead of waiting for someone else to secure tickets for a different show or the same concert but in different seats.
 This greatly improves seat booking throughput, especially when several users are attempting to book seats for the same concert.
 
