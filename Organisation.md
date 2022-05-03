@@ -33,8 +33,20 @@ This greatly improves seat booking throughput, especially when several users are
 
 ### How the domain model is organised
 
-TBD
+We used lazy loading for most of the list attributes in our domain classes to improve performance by having less to fetch. `SUBSELECT` was applied to all those to reduce wasteful queries and avoid n + 1 problems. 
+However, dynamic eager fetch was used when we retrieve all booked seats for notifying subscribers, this would avoid having to go into the database again when we retrieve seats immediately after. 
+Inline eager fetch would avoid having Cartesian product when seats are not immediately assessed after bookings are fetched.
 
+Cascade type was only specified in the `performers` list in `Concert` class, because in a real world situation, performer and item performed would change frequently even close to the date of event. 
+Therefore, changes to the performers of a concert would need to be altered often, setting this list to persist cascade type would allow `performers` to be propagated when updating `Concert` instances. 
+`Seats` and `Booking` was left cascaded because seats should hold the status `Unbooked` when detached from all `Booking` instances.  
+
+### Scalability
+
+Sub-select fetch mode when loading collections has one-to-many or many-to-many associations, the request only request single round to database, which is minimised the number of DB access.
+
+Another scalable is statelessness. The service side implements the thread-per-request model, asynchronous communication between server and client. (Such as Subscription).
+This allowed arbitrary replicated to different machines and on different places.
 
 
 
