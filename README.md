@@ -1,6 +1,6 @@
 # Concert Booking Service
 
-![Build Status](https://travis-ci.com/ygua699/Concert-Booking-Service.svg?branch=main)
+![Build Status](https://github.com/ygua699/Concert-Booking-Service/actions/workflows/autotest.yml/badge.svg)
 [![GitHub last commit](https://img.shields.io/github/last-commit/ygua699/Concert-Booking-Service.svg?style=flat-square)](https://github.com/ygua699/Concert-Booking-Service/main)
 [![GitHub issues](https://img.shields.io/github/issues/ygua699/Concert-Booking-Service.svg?style=flat-square)](https://github.com/ygua699/Concert-Booking-Service/issues)
 [![GitHub stars](https://img.shields.io/github/stars/ygua699/Concert-Booking-Service.svg?style=flat-square)](https://github.com/ygua699/Concert-Booking-Service/stargazers)
