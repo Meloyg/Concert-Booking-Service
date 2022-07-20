@@ -12,7 +12,8 @@ import proj.concert.service.domain.Seat;
  */
 public class TheatreLayout {
 
-    // Data here should match up with that in seat-data-module.js. Ideally we wouldn't be hardcoding this...
+    // Data here should match up with that in seat-data-module.js. Ideally we
+    // wouldn't be hardcoding this...
     public static final int NUM_SEATS_PER_ROW = 12;
     public static final int NUM_ROWS = 10;
     public static final int NUM_SEATS_IN_THEATRE = NUM_SEATS_PER_ROW * NUM_ROWS;
@@ -23,7 +24,8 @@ public class TheatreLayout {
     };
 
     /**
-     * A utility function that creates all required {@link Seat} objects for a concert on the given date.
+     * A utility function that creates all required {@link Seat} objects for a
+     * concert on the given date.
      *
      * @param date the date
      * @return a list of Seat objects
@@ -45,8 +47,7 @@ public class TheatreLayout {
                 String seatLabel = "" + rowLabel + seatNum;
 
                 seats.add(new Seat(
-                        seatLabel, false, date, currentPricing.price
-                ));
+                        seatLabel, false, date, currentPricing.price));
             }
 
             rowsCreatedThisPricingBand++;

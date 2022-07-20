@@ -1,15 +1,11 @@
 package proj.concert.service.domain;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -92,13 +88,14 @@ public class Booking {
 
     @Override
     public boolean equals(Object obj) {
-        if (this==obj) {
+        if (this == obj) {
             return true;
         }
         if (!(obj instanceof Booking)) {
             return false;
         }
         Booking other = (Booking) obj;
-        return concertId==other.concertId && Objects.equals(date, other.date) && Objects.equals(id, other.id) && Objects.equals(user, other.user);
+        return concertId == other.concertId && Objects.equals(date, other.date) && Objects.equals(id, other.id)
+                && Objects.equals(user, other.user);
     }
 }

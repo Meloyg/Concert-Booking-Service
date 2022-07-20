@@ -21,7 +21,7 @@ public class Performer {
     private String imageName;
     @Enumerated(EnumType.STRING)
     private Genre genre;
-    @Column(name = "BLURB", columnDefinition = "LONGTEXT") //allow blurb to store more text
+    @Column(name = "BLURB", columnDefinition = "LONGTEXT") // allow blurb to store more text
     private String blurb;
 
     public Performer() {
@@ -77,9 +77,11 @@ public class Performer {
 
     @Override
     public boolean equals(Object obj) {
-        if (this==obj) return true;
+        if (this == obj)
+            return true;
 
-        if (obj==null || getClass()!=obj.getClass()) return false;
+        if (obj == null || getClass() != obj.getClass())
+            return false;
 
         Performer other = (Performer) obj;
 

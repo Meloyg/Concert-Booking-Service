@@ -5,15 +5,9 @@ import java.util.*;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import proj.concert.common.jackson.LocalDateTimeDeserializer;
-import proj.concert.common.jackson.LocalDateTimeSerializer;
-import proj.concert.service.jaxrs.LocalDateTimeParam;
 
 /**
  * Concert domain class.
@@ -30,11 +24,10 @@ public class Concert {
     private String imageName;
     @Column(name = "BLURB", columnDefinition = "LONGTEXT")
     private String blurb;
-    @ManyToMany(cascade = {CascadeType.PERSIST})
+    @ManyToMany(cascade = { CascadeType.PERSIST })
     @Fetch(FetchMode.SUBSELECT)
-    @JoinTable(name = "CONCERT_PERFORMER",
-            joinColumns = {@JoinColumn(name = "CONCERT_ID")},
-            inverseJoinColumns = {@JoinColumn(name = "PERFORMER_ID")})
+    @JoinTable(name = "CONCERT_PERFORMER", joinColumns = { @JoinColumn(name = "CONCERT_ID") }, inverseJoinColumns = {
+            @JoinColumn(name = "PERFORMER_ID") })
     private Set<Performer> performers;
     @ElementCollection
     @CollectionTable(name = "CONCERT_DATES")
@@ -44,7 +37,8 @@ public class Concert {
     public Concert() {
     }
 
-    public Concert(Long id, String title, String imageName, String blurb, Set<LocalDateTime> dates, Set<Performer> performers) {
+    public Concert(Long id, String title, String imageName, String blurb, Set<LocalDateTime> dates,
+            Set<Performer> performers) {
         this.id = id;
         this.title = title;
         this.imageName = imageName;
@@ -105,12 +99,10 @@ public class Concert {
     public boolean equals(Object obj) {
         if (!(obj instanceof Concert))
             return false;
-        if (obj==this)
+        if (obj == this)
             return true;
         Concert rhs = (Concert) obj;
-        return new EqualsBuilder().
-                append(title, rhs.title).
-                isEquals();
+        return new EqualsBuilder().append(title, rhs.title).isEquals();
     }
 
     @Override

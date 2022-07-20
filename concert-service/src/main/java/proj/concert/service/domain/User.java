@@ -1,9 +1,7 @@
 package proj.concert.service.domain;
 
-
 import javax.persistence.*;
 import java.util.Objects;
-
 
 /**
  * User domain class
@@ -66,8 +64,10 @@ public class User {
 
     @Override
     public boolean equals(Object o) {
-        if (this==o) return true;
-        if (o==null || getClass()!=o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         User user = (User) o;
 

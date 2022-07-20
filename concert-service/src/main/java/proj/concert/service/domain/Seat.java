@@ -74,10 +74,12 @@ public class Seat {
 
     @Override
     public boolean equals(Object o) {
-        if (this==o) return true;
-        if (o==null || getClass()!=o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Seat seat = (Seat) o;
-        return isBooked==seat.isBooked &&
+        return isBooked == seat.isBooked &&
                 Objects.equals(id, seat.id) &&
                 Objects.equals(label, seat.label) &&
                 Objects.equals(date, seat.date) &&

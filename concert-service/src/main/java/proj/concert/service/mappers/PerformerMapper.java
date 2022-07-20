@@ -6,7 +6,8 @@ import proj.concert.service.domain.*;
 import java.util.*;
 
 /**
- * Mapper class for converting between Performer objects and PerformerDTO objects.
+ * Mapper class for converting between Performer objects and PerformerDTO
+ * objects.
  */
 public class PerformerMapper {
 

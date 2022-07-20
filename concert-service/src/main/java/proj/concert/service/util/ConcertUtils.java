@@ -20,7 +20,8 @@ public class ConcertUtils {
     private static Logger LOGGER = LoggerFactory.getLogger(ConcertUtils.class);
 
     /**
-     * This method will clear all seat and booking data from the database. Then, it will create all Seat objects for
+     * This method will clear all seat and booking data from the database. Then, it
+     * will create all Seat objects for
      * all concerts and dates.
      */
     public static void initConcerts() {

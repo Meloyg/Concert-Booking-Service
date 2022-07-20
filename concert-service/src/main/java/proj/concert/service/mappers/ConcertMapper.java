@@ -6,17 +6,18 @@ import proj.concert.service.domain.*;
 import java.util.*;
 
 /**
- * Mapper class for Concert domain object and ConcertDTO/ConcertSummaryDTO object.
+ * Mapper class for Concert domain object and ConcertDTO/ConcertSummaryDTO
+ * object.
  */
 public class ConcertMapper {
 
     public static ConcertDTO toDTO(Concert c) {
         ConcertDTO dto = new ConcertDTO(c.getId(), c.getTitle(), c.getImageName(), c.getBlurb());
         c.getPerformers()
-         .forEach(performer -> dto.getPerformers()
-                                  .add(PerformerMapper.toDTO(performer)));
+                .forEach(performer -> dto.getPerformers()
+                        .add(PerformerMapper.toDTO(performer)));
         dto.getDates()
-           .addAll(c.getDates());
+                .addAll(c.getDates());
         return dto;
     }
 

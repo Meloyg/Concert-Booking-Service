@@ -9,12 +9,14 @@ import org.slf4j.LoggerFactory;
 import proj.concert.service.util.ConcertUtils;
 
 /**
- * This service allows the integration tests to reset the database via an HTTP request. Do not modify this class.
+ * This service allows the integration tests to reset the database via an HTTP
+ * request. Do not modify this class.
  */
 @Path("/concert-service-test")
 public class TestResource {
 
     private static Logger LOGGER = LoggerFactory.getLogger(TestResource.class);
+
     /**
      * Resets the database to default values for testing purposes.
      */
