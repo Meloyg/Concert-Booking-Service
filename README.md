@@ -1,6 +1,11 @@
 # Concert Booking Service
 
-The aim of this project is to build a Web service for concert booking.
+![Build Status](https://travis-ci.com/ygua699/Concert-Booking-Service.svg?branch=main)
+[![GitHub last commit](https://img.shields.io/github/last-commit/ygua699/Concert-Booking-Service.svg?style=flat-square)](https://github.com/ygua699/Concert-Booking-Service/main)
+[![GitHub issues](https://img.shields.io/github/issues/ygua699/Concert-Booking-Service.svg?style=flat-square)](https://github.com/ygua699/Concert-Booking-Service/issues)
+[![GitHub stars](https://img.shields.io/github/stars/ygua699/Concert-Booking-Service.svg?style=flat-square)](https://github.com/ygua699/Concert-Booking-Service/stargazers)
+
+A JAX-RS Web service for concert booking.
 
 ## System description
 
@@ -15,6 +20,16 @@ Clients may view concert and performer information, and enquire about available 
 In addition, clients should be able to subscribe to information regarding concert bookings. Specifically, they should be able to subscribe to "watch" one or more concerts / dates, and be notified when those concerts / dates are about to sell out.
 
 A particular quality attribute that the service must satisfy is scalability. It is expected that the service will experience high load when concert tickets go on sale.
+
+## Execution
+
+#### Running the complete system
+
+The only way to run the complete system is to package both the `client` and `service` projects into `WAR` files, and deploy them to a running servlet container such as Tomcat.
+
+Fortunately, running Maven's `package` goal on the parent project will build both WARs as required. However, we will still need to set up a Tomcat (or similar) instance to run the application.
+
+Whichever IDE you use, the first step will be to download a Tomcat installation, if you don't already have one. You can find them [here](https://tomcat.apache.org/download-80.cgi). Get version `8.5.x` as an archive (the installer isn't required), download and unzip it somewhere on your machine, and then follow the steps below according to your IDE.
 
 ## Resources
 
@@ -123,12 +138,10 @@ Once the user has made their selection, they can click the "Book!" button. Assum
 
 Dismissing the dialog will redirect the user back to the concerts page, where they may continue to book tickets at other concerts / dates. (or more tickets for the same concert / date).
 
-#### Running the complete system
+## Contributors
 
-The only way to run the complete system is to package both the `client` and `service` projects into `WAR` files, and deploy them to a running servlet container such as Tomcat.
-
-Fortunately, running Maven's `package` goal on the parent project will build both WARs as required. However, we will still need to set up a Tomcat (or similar) instance to run the application.
-
-Whichever IDE you use, the first step will be to download a Tomcat installation, if you don't already have one. You can find them [here](https://tomcat.apache.org/download-80.cgi). Get version `8.5.x` as an archive (the installer isn't required), download and unzip it somewhere on your machine, and then follow the steps below according to your IDE.
-
-**Warning** There seem to be a number of variations in IDE setup and installation, so what's below may not work for your particular setup. You may need to explore google to find workable alternatives. [Tomcat-CL](Tomcat-CL.md) has a simplified attempt for doing it from the command line.
+| Name                      |
+| ------------------------- |
+| Melo Guan (ygua699)       |
+| Nancy Zhong (nancy111573) |
+| Alex Cao (Alex-Beep-Cao)  |

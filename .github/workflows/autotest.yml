@@ -3,7 +3,7 @@ name: GitHub Workflow for auto-running tests for Project
 on:
   push:
      branches:
-       - submission
+       - main
 jobs:
   build:
      name: Run make with target tests
